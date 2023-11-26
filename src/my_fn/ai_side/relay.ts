@@ -1,7 +1,7 @@
 // as the relay comminication between sdw and aiweb3-frontend
 
-import { nftMintText2Img } from "../config/aiweb3";
-import { SdwInstance } from "../my_definition/class";
+import { nftMintText2Img } from "../../config/aiweb3";
+import { SdwInstance } from "../../my_definition/class";
 // const { graphqlHTTP } = require('express-graphql');
 // const { buildSchema } = require('graphql');
 const express = require('express');
