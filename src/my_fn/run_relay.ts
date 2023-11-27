@@ -1,7 +1,8 @@
 import { program } from "commander"
 import { sdwConfig } from "../config/sdw"
 import { SdwInstance } from "../my_definition/class"
-import { listenAiweb3Frontend } from "./relay"
+import { listenAiweb3Frontend } from "./relay_ai_side"
+import { fetchTaskFromSql } from "./relay_frontend_side"
 
 
 program
@@ -18,6 +19,8 @@ export const run_relay = async () => {
 
         
     }else if (command_input.relaySide == 'frontend') {
+
+        fetchTaskFromSql()
         // wait Dr Cao provide the API for frontend SQL
     }else{
         console.log('please input --relaySide <string> wrong: ',command_input.relaySide)

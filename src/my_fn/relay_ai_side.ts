@@ -5,6 +5,7 @@ import { configRelay } from "../config/general";
 import { SdwInstance } from "../my_definition/class";
 import * as fs from 'fs';
 import FormData from 'form-data'
+import { Task } from "./relay_frontend_side";
 // const { graphqlHTTP } = require('express-graphql');
 // const { buildSchema } = require('graphql');
 const express = require('express');
@@ -56,25 +57,42 @@ export const fetchTaskFromFrontEnd = async (sdwInstance: SdwInstance) => {
             const response = await fetch(relayFrontEndUrl+'/fetchTask')
             const data = await response.json()
             console.log(data)
+            if (data == 'none'){
+                console.log('no task')
+                await new Promise(r => setTimeout(r, 1000)) 
+                continue
+            }
+            const taskArray:Task[] = data
+            for (const task of taskArray){
+                const taskID = task.taskID
+                const promptAdd = task.featureInput
+                const imgPath = 'src/public/output/ai_side/'+taskID+'.png'
+                await sdwInstance.text2img(nftMintText2Img,promptAdd,imgPath)
+                await new Promise(r => setTimeout(r, 500))
+                const formData = new FormData();
 
-            // get img
-            const imagePath = 'src/public/output/temp.png';
-            await sdwInstance.text2img(nftMintText2Img,data,imagePath)
+         
 
-            // upload img
+                // Append the file to the form data
+                // 'image' is the field name that the server expects for the uploaded file
+                formData.append('image', fs.createReadStream(imgPath));
+            
+                // Append any additional data if necessary
+                formData.append('text', taskID);
+            
+                try {
+                    const response = await fetch(relayFrontEndUrl+'/uploadImg', {
+                        method: 'POST',
+                        body: formData as any,
+                        // Headers will be automatically set by the `form-data` library
+                    });
+                    const data = await response.json();
+                    console.log(data);
+                } catch (error) {
+                    console.error('Upload failed:', error);
+                }
 
-           
-            const imageBuffer = fs.readFileSync(imagePath);
-            const formData = new FormData();
-
-            formData.append('image', imageBuffer, 'image.jpg');
-
-            fetch(relayFrontEndUrl+'/uploadImg', {
-                method: 'POST',
-                body: formData as any
-            }).then(response => response.text())
-                .then(result => console.log(result))
-                .catch(error => console.error('Error:', error))
+            }
             
         }catch(e){
             console.log('fetchTaskFromRelay error: ',e)

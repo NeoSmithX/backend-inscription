@@ -11,15 +11,59 @@ app.use(express.json());
 const port = 1984;
 
 
-
+export type Task ={
+    taskID:string,
+    featureInput:string,
+    imgPath:string,
+    isCompleted:boolean
+}
+const taskGlobal:Task[] = []
 export const fetchTaskFromSql = async () => {
-
+    
     while (true) {
         try {
-            const pythonProcess = spawn('python', ['DB_backend/3_submit_task.py']);
+            const pythonProcess = spawn('python', ['DB_backend/5_fetchTask.py']);
 
             pythonProcess.stdout.on('data', (data) => {
-                console.log(`stdout: ${data}`);
+                // console.log(`stdout: ${data}`)
+                const lines = data.toString().split('\n')
+                const tupleLineList = lines.filter((line: string | string[]) => line.includes('(') && line.includes(')'))
+                for (const tupleLine of tupleLineList) {
+                    // Remove the parentheses and split by comma
+                    const elements = tupleLine.slice(1, -1).split(',').map((el: string) => el.trim());
+
+                    // Extract the task ID
+                    const taskID = elements[0]
+                    // console.log('taskID:', taskID) //
+
+                    // Extract and parse the JSON string
+                    // Extract the JSON string
+                    const jsonMatch = tupleLine.match(/{.*}/);
+                    const jsonString = jsonMatch ? jsonMatch[0] : null;
+                    // Parse the JSON string
+                    const jsonObject = JSON.parse(jsonString);
+                    // console.log('JSON Object:', jsonObject);
+                    let featureInput = ''
+                    for (const [key, value] of Object.entries(jsonObject)) {
+                        // console.log(`${key}: ${value}`);
+                        featureInput = featureInput + value + ','
+                    }
+                    // console.log('featureInput:', featureInput)
+                    if (taskGlobal.filter((task:Task) => task.taskID == taskID).length == 0){
+                        taskGlobal.push(
+                            {
+                                taskID: taskID,
+                                featureInput: featureInput,
+                                imgPath: 'DB_backend/public/data_from_relay/'+taskID+'.png',
+                                isCompleted: false
+                            }
+                        )
+                    }
+                  
+                }
+
+
+
             });
 
             pythonProcess.stderr.on('data', (data) => {
@@ -32,6 +76,8 @@ export const fetchTaskFromSql = async () => {
         } catch (e) {
             console.log(e)
         }
+        console.log('current task is: ',taskGlobal)
+        await new Promise(r => setTimeout(r, 10000))
     }
 
     // app.post('/sdw', async (req: { body: { data: any; }; }, res: { status: (arg0: number) => { (): any; new(): any; json: { (arg0: { message: string; processedData?: unknown; error?: unknown; }): void; new(): any; }; }; }) => {
@@ -57,4 +103,39 @@ export const fetchTaskFromSql = async () => {
     // app.listen(port, () => {
     //     console.log(`Server listening at http://localhost:${port}`)
     // })
+}
+
+export const distributeTask = async () => {
+    app.post('/fetchTask', async (req: any, res: { json: (arg0: string | Task[]) => void; }) => {
+        const tasks = taskGlobal.filter((task:Task) => task.isCompleted == false)
+        if (tasks.length == 0){
+            
+            res.json('none')
+            
+        }else{
+            res.json(tasks)
+        }
+        
+    })
+}
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' }); // Images will be stored in 'uploads' folder
+
+export const receiveImgFromAiSide = async () => {
+    app.post('/uploadImg', upload.single('image'), (req: { file: any; body: { text: string; }; }, res: { status: (arg0: number) => { (): any; new(): any; json: { (arg0: { message: string; }): void; new(): any; }; }; }) => {
+        console.log('Received file:', req.file);
+        console.log('Received text:', req.body.text); // Assuming 'text' is the key for the string data
+      
+        res.status(200).json({ message: 'File and text received' });
+        
+       
+
+        const task = taskGlobal.find((task:Task) => task.taskID == req.body.text);
+        if (task) {
+            req.file.toFile(task.imgPath)
+            const pythonProcess = spawn('python', ['DB_backend/3_submit_task.py',task.taskID,task.imgPath]);
+            task.isCompleted = true;
+        }
+        
+      });
 }
