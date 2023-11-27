@@ -1,7 +1,7 @@
 import { program } from "commander"
 import { sdwConfig } from "../config/sdw"
 import { SdwInstance } from "../my_definition/class"
-import { listenAiweb3Frontend } from "./ai_side/relay"
+import { listenAiweb3Frontend } from "./relay"
 
 
 program
