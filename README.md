@@ -37,15 +37,20 @@ tsc
 
 ### Run at the AI side
 
+
+
 node dist/index.js --relaySide ai
-
-#### Test
-
-curl -X POST http://localhost:1984/sdw -H "Content-Type: application/json" -d '{"data": "mint girl, cute, rabbit"}' 
 
 ### Run at the frontend side
 
 node dist/index.js --relaySide frontend
+
+
+# Step Summary
+1. Run the SDW as a service
+2. Run the relay at the AI side
+3. Run the relay at the frontend side
+😆😆😆
 
 
  

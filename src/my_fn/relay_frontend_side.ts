@@ -6,8 +6,14 @@ import { configRelay } from "../config/general";
 // const { graphqlHTTP } = require('express-graphql');
 // const { buildSchema } = require('graphql');
 const express = require('express');
+const bodyParser = require('body-parser')
 const app = express();
-app.use(express.json());
+// app.use(express.json());
+// Configure body-parser for larger payloads
+// app.use(bodyParser.json({ limit: '50mb' })); // Adjust the limit as needed
+// app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }))
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' }); // Images will be stored in 'uploads' folder
 const fs = require('fs');
@@ -108,7 +114,7 @@ export const receiveImgFromAiSide = async () => {
         console.log('Received taskId :', taskID);
     
         console.log('Received file:', req.file);
-        console.log('Received text:', req.body.text); // Assuming 'text' is the key for the string data
+        console.log('Received body:', req.body); // Assuming 'text' is the key for the string data
       
         res.status(200).json({ message: 'File and text received' });
         
@@ -125,6 +131,29 @@ export const receiveImgFromAiSide = async () => {
         
                 res.status(200).json({ message: 'File uploaded successfully' });
             });
+            const pythonProcess = spawn('python', ['DB_backend/3_submit_task.py',task.taskID,task.imgPath]);
+            task.isCompleted = true;
+        }
+        
+      })
+      app.listen(configRelay.frontend.port, () => {
+        console.log(`Server running on `+configRelay.frontend.url+':'+configRelay.frontend.port);
+    });
+}
+export const receiveImgFromAiSide_v2 = async () => {
+    app.post('/uploadImg',  (req: any, res: any ) => {
+        const { image, taskID } = req.body;
+        
+        
+       
+
+        const task = taskGlobal.find((task:Task) => task.taskID == taskID);
+        if (task) {
+          
+       
+            const imageBuffer = Buffer.from(image, 'base64');
+    
+            fs.writeFileSync(task.imgPath, imageBuffer);
             const pythonProcess = spawn('python', ['DB_backend/3_submit_task.py',task.taskID,task.imgPath]);
             task.isCompleted = true;
         }
