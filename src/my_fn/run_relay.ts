@@ -1,8 +1,9 @@
 import { program } from "commander"
 import { sdwConfig } from "../config/sdw"
 import { SdwInstance } from "../my_definition/class"
-import { listenAiweb3Frontend } from "./relay_ai_side"
-import { fetchTaskFromSql } from "./relay_frontend_side"
+
+import { distributeTask, fetchTaskFromSql, receiveImgFromAiSide } from "./relay_frontend_side"
+import { fetchTaskFromFrontEnd } from "./relay_ai_side"
 
 
 program
@@ -15,12 +16,14 @@ export const run_relay = async () => {
         const sdwInstance = new SdwInstance(sdwConfig)
         await sdwInstance.setModel(sdwConfig.model.name)
     
-        listenAiweb3Frontend(sdwInstance)
+        fetchTaskFromFrontEnd(sdwInstance)
 
         
     }else if (command_input.relaySide == 'frontend') {
 
         fetchTaskFromSql()
+        distributeTask()
+        receiveImgFromAiSide()
         // wait Dr Cao provide the API for frontend SQL
     }else{
         console.log('please input --relaySide <string> wrong: ',command_input.relaySide)

@@ -1,14 +1,17 @@
 // as the relay comminication between sdw and aiweb3-frontend
 
 import { spawn } from "child_process";
-import { nftMintText2Img } from "../config/aiweb3";
-import { SdwInstance } from "../my_definition/class";
+
+import { configRelay } from "../config/general";
 // const { graphqlHTTP } = require('express-graphql');
 // const { buildSchema } = require('graphql');
 const express = require('express');
 const app = express();
 app.use(express.json());
-const port = 1984;
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' }); // Images will be stored in 'uploads' folder
+const fs = require('fs');
+const path = require('path');
 
 
 export type Task ={
@@ -80,49 +83,30 @@ export const fetchTaskFromSql = async () => {
         await new Promise(r => setTimeout(r, 10000))
     }
 
-    // app.post('/sdw', async (req: { body: { data: any; }; }, res: { status: (arg0: number) => { (): any; new(): any; json: { (arg0: { message: string; processedData?: unknown; error?: unknown; }): void; new(): any; }; }; }) => {
-    //     const data = req.body.data // Assuming data is sent in the body with key 'data'
-
-    //     if (data && data.startsWith('mint')) {
-
-    //         const remainingData = data.substring(4) // Remove 'mint' from the start
-    //         try {
-    //             const imgPath = 'src/public/output/result.png'
-    //             // await sdwInstance.text2img(nftMintText2Img,remainingData,imgPath)
-    //             res.status(200).json({ message: 'img is stored to '+ imgPath })
-    //             // const processedData = await processData(remainingData)
-    //             // res.status(200).json({ message: 'Data processed', processedData })
-    //         } catch (error) {
-    //             res.status(500).json({ message: 'Error processing data', error })
-    //         }
-    //     } else {
-    //         res.status(400).json({ message: 'Invalid data' })
-    //     }
-    // })
-
-    // app.listen(port, () => {
-    //     console.log(`Server listening at http://localhost:${port}`)
-    // })
 }
 
 export const distributeTask = async () => {
     app.post('/fetchTask', async (req: any, res: { json: (arg0: string | Task[]) => void; }) => {
         const tasks = taskGlobal.filter((task:Task) => task.isCompleted == false)
         if (tasks.length == 0){
-            
+            console.log('send no task')
             res.json('none')
             
         }else{
+            console.log('send task',tasks)
             res.json(tasks)
         }
         
     })
+   
 }
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/' }); // Images will be stored in 'uploads' folder
 
 export const receiveImgFromAiSide = async () => {
-    app.post('/uploadImg', upload.single('image'), (req: { file: any; body: { text: string; }; }, res: { status: (arg0: number) => { (): any; new(): any; json: { (arg0: { message: string; }): void; new(): any; }; }; }) => {
+    app.post('/uploadImg', upload.single('image'), (req: any, res: any ) => {
+        console.log('!!!!!',req)
+        const taskID = req.body.taskID
+        console.log('Received taskId :', taskID);
+    
         console.log('Received file:', req.file);
         console.log('Received text:', req.body.text); // Assuming 'text' is the key for the string data
       
@@ -132,10 +116,21 @@ export const receiveImgFromAiSide = async () => {
 
         const task = taskGlobal.find((task:Task) => task.taskID == req.body.text);
         if (task) {
-            req.file.toFile(task.imgPath)
+            const tempPath = req.file.path;
+            const targetPath = path.join(__dirname, 'uploads', taskID);
+        
+            // Move and rename the file
+            fs.rename(tempPath, targetPath, (err: any) => {
+                if (err) return res.status(500).json({ message: 'Error saving the file' });
+        
+                res.status(200).json({ message: 'File uploaded successfully' });
+            });
             const pythonProcess = spawn('python', ['DB_backend/3_submit_task.py',task.taskID,task.imgPath]);
             task.isCompleted = true;
         }
         
-      });
+      })
+      app.listen(configRelay.frontend.port, () => {
+        console.log(`Server running on `+configRelay.frontend.url+':'+configRelay.frontend.port);
+    });
 }
