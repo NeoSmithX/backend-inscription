@@ -13,8 +13,9 @@ conda activate xxx (this is the name of the conda environment)
 
 bash webui.sh --nowebui --gradio-auth admin:admin123   (more args: https://github.com/AUTOMATIC1111/stable-diffusion-webui/wiki/Command-Line-Arguments-and-Settings)
 
-## Run the relay (this project) at the ai side
-Now, we can run the relay at the ai side.
+## Run the relay (this project)
+Now, we can run the relay.
+### Install
 
 yarn install
 
@@ -28,16 +29,25 @@ to
     const modelNames = models.map((model) => model.model_name);
 ```
 
+### Add customer parameter into /config 
+
+### Compile 
+
+tsc
+
+### Run at the AI side
 
 node dist/index.js --relaySide ai
 
-## Test
+#### Test
 
 curl -X POST http://localhost:1984/sdw -H "Content-Type: application/json" -d '{"data": "mint girl, cute, rabbit"}' 
 
-# Part II: Relay at the frontend side
+### Run at the frontend side
 
-    Waiting for Dr Cao provde the SQL api.
+node dist/index.js --relaySide frontend
+
+
  
 
 
