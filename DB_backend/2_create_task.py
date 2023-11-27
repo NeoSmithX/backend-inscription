@@ -7,7 +7,7 @@ aiweb3OBJ = AIWeb3()    # create the object
 
 if len(sys.argv) < 3:
     print("We need two inputs, the eth address and a json format string. For example:")
-    print("python3 " + sys.argv[0] + " \"0xabcdef\" \"{\"feature1\":\"ff111\", \"feature2\":\"ff12323232\"}\"  ")
+    print("python3 " + sys.argv[0] + " \"0xabcdef\" \'{\"feature1\":\"ff111\", \"feature2\":\"ff12323232\"}\'  ")
     sys.exit(0)
 
 ETHaddress = sys.argv[1]
