@@ -20,15 +20,15 @@ const fs = require('fs');
 const path = require('path');
 
 
-export type Task ={
-    taskID:string,
-    featureInput:string,
-    imgPath:string,
-    isCompleted:boolean
+export type Task = {
+    taskID: string,
+    featureInput: string,
+    imgPath: string,
+    isCompleted: boolean
 }
-const taskGlobal:Task[] = []
+const taskGlobal: Task[] = []
 export const fetchTaskFromSql = async () => {
-    
+
     while (true) {
         try {
             const pythonProcess = spawn('python', ['DB_backend/5_fetchTask.py']);
@@ -58,17 +58,17 @@ export const fetchTaskFromSql = async () => {
                         featureInput = featureInput + value + ','
                     }
                     // console.log('featureInput:', featureInput)
-                    if (taskGlobal.filter((task:Task) => task.taskID == taskID).length == 0){
+                    if (taskGlobal.filter((task: Task) => task.taskID == taskID).length == 0) {
                         taskGlobal.push(
                             {
                                 taskID: taskID,
                                 featureInput: featureInput,
-                                imgPath: 'DB_backend/public/data_from_relay/'+taskID+'.png',
+                                imgPath: 'DB_backend/public/data_from_relay/' + taskID + '.png',
                                 isCompleted: false
                             }
                         )
                     }
-                  
+
                 }
 
 
@@ -85,7 +85,7 @@ export const fetchTaskFromSql = async () => {
         } catch (e) {
             console.log(e)
         }
-        console.log('current task is: ',taskGlobal)
+        console.log('current task is: ', taskGlobal)
         await new Promise(r => setTimeout(r, 10000))
     }
 
@@ -93,73 +93,109 @@ export const fetchTaskFromSql = async () => {
 
 export const distributeTask = async () => {
     app.post('/fetchTask', async (req: any, res: { json: (arg0: string | Task[]) => void; }) => {
-        const tasks = taskGlobal.filter((task:Task) => task.isCompleted == false)
-        if (tasks.length == 0){
+        const tasks = taskGlobal.filter((task: Task) => task.isCompleted == false)
+        if (tasks.length == 0) {
             console.log('send no task')
             res.json('none')
-            
-        }else{
-            console.log('send task',tasks)
+
+        } else {
+            console.log('send task', tasks)
             res.json(tasks)
         }
-        
+
     })
-   
+
 }
 
 export const receiveImgFromAiSide = async () => {
-    app.post('/uploadImg', upload.single('image'), (req: any, res: any ) => {
-        console.log('!!!!!',req)
+    app.post('/uploadImg', upload.single('image'), (req: any, res: any) => {
+        console.log('!!!!!', req)
         const taskID = req.body.taskID
         console.log('Received taskId :', taskID);
-    
+
         console.log('Received file:', req.file);
         console.log('Received body:', req.body); // Assuming 'text' is the key for the string data
-      
-        res.status(200).json({ message: 'File and text received' });
-        
-       
 
-        const task = taskGlobal.find((task:Task) => task.taskID == req.body.text);
+        res.status(200).json({ message: 'File and text received' });
+
+
+
+        const task = taskGlobal.find((task: Task) => task.taskID == req.body.text);
         if (task) {
             const tempPath = req.file.path;
             const targetPath = path.join(__dirname, 'uploads', taskID);
-        
+
             // Move and rename the file
             fs.rename(tempPath, targetPath, (err: any) => {
                 if (err) return res.status(500).json({ message: 'Error saving the file' });
-        
+
                 res.status(200).json({ message: 'File uploaded successfully' });
             });
-            const pythonProcess = spawn('python', ['DB_backend/3_submit_task.py',task.taskID,task.imgPath]);
+            const pythonProcess = spawn('python', ['DB_backend/3_submit_task.py', task.taskID, task.imgPath]);
             task.isCompleted = true;
         }
-        
-      })
-      app.listen(configRelay.frontend.port, () => {
-        console.log(`Server running on `+configRelay.frontend.url+':'+configRelay.frontend.port);
+
+    })
+    app.listen(configRelay.frontend.port, () => {
+        console.log(`Server running on ` + configRelay.frontend.url + ':' + configRelay.frontend.port);
     });
 }
 export const receiveImgFromAiSide_v2 = async () => {
-    app.post('/uploadImg',  (req: any, res: any ) => {
+    app.post('/uploadImg', (req: any, res: any) => {
         const { image, taskID } = req.body;
-        
-        
-       
 
-        const task = taskGlobal.find((task:Task) => task.taskID == taskID);
+
+
+
+        const task = taskGlobal.find((task: Task) => task.taskID == taskID);
         if (task) {
-          
-       
+
+
             const imageBuffer = Buffer.from(image, 'base64');
-    
+
             fs.writeFileSync(task.imgPath, imageBuffer);
-            const pythonProcess = spawn('python', ['DB_backend/3_submit_task.py',task.taskID,task.imgPath]);
+            const pythonProcess = spawn('python', ['DB_backend/3_submit_task.py', task.taskID, task.imgPath]);
             task.isCompleted = true;
         }
-        
-      })
-      app.listen(configRelay.frontend.port, () => {
-        console.log(`Server running on `+configRelay.frontend.url+':'+configRelay.frontend.port);
+
+    })
+    app.listen(configRelay.frontend.port, () => {
+        console.log(`Server running on ` + configRelay.frontend.url + ':' + configRelay.frontend.port);
     });
+}
+
+
+export const verifyUserSignature = async () => {
+    const Web3 = require('web3')
+    const web3WithoutRpc = new Web3()
+    app.post('/verifyUserSignature', (req: any, res: any) => {
+        const { userAddress, message, signature } = req.body;
+
+        if (userAddress && message && signature) {
+            const signerAddress = web3WithoutRpc.eth.accounts.recover(message, signature)
+            if (signerAddress.tolowercase() == userAddress.tolowercase()) {
+                res.json('correct')
+            } else {
+                res.json('wrong')
+            }
+        }
+
+
+    })
+
+}
+
+export const generateTaskFromFrontend = async () => {
+    const Web3 = require('web3')
+    const web3WithoutRpc = new Web3()
+    app.post('/generateTaskFromFrontend', (req: any, res: any) => {
+        const { userAddress, feature } = req.body;
+
+        if (userAddress && feature) {
+            spawn('python', ['DB_backend/2_create_task.py', userAddress, feature]);
+        }
+        // "0xabcdef" "{\"feature1\":\"ff111\", \"feature2\":\"ff12323232\"}"
+
+    })
+
 }

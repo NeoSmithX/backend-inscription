@@ -2,7 +2,7 @@ import { program } from "commander"
 import { sdwConfig } from "../config/sdw"
 import { SdwInstance } from "../my_definition/class"
 
-import { distributeTask, fetchTaskFromSql, receiveImgFromAiSide, receiveImgFromAiSide_v2 } from "./relay_frontend_side"
+import { distributeTask, fetchTaskFromSql, receiveImgFromAiSide, receiveImgFromAiSide_v2, verifyUserSignature } from "./relay_frontend_side"
 import { fetchTaskFromFrontEnd, fetchTaskFromFrontEnd_v2 } from "./relay_ai_side"
 
 
@@ -21,10 +21,12 @@ export const run_relay = async () => {
         
     }else if (command_input.relaySide == 'frontend') {
 
-        fetchTaskFromSql()
-        distributeTask()
-        receiveImgFromAiSide_v2()
-        // wait Dr Cao provide the API for frontend SQL
+        fetchTaskFromSql()  // get the task from sql
+        distributeTask()    // send task to the AI side
+        receiveImgFromAiSide_v2() // receive the image from AI side
+        
+        verifyUserSignature()  // help the frontend to verify the user signature
+   
     }else{
         console.log('please input --relaySide <string> wrong: ',command_input.relaySide)
         return
