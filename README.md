@@ -59,7 +59,7 @@ node dist/index.js --relaySide frontend
 😆😆😆
 
 # How the frontend interact with the relay
-If Kabugu wanna test this at local, no need to install any AI module. Just run 
+If Kabugu wanna test this at local, no need to install any AI module. U need first install python and SQL requirement accourding to the DB_backend/README.md (It is for Mac. If u use linux, u may ask chatgpt or Dr. Cao). Then, u can run the relay at the local. 
 
 ```
 yarn install
