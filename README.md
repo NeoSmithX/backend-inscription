@@ -81,6 +81,24 @@ Here, the port number 1985 is defined in the config file general.ts. Current_tim
 
 The backend will reply 'correct'/'wrong' to the frontend.
 
+Example code:
+```
+    const urlVerifyUserSignature = "http://127.0.0.1:1985/verifyUserSignature" 
+    const data = JSON.stringify({
+        message: "0xaaaaa is signing in to Aiweb3 at timestamp [current_timestamp] with nonce [random_nonce]",
+        signature: "0x...",
+        userAddress: "0x..."
+    })
+    const response = await fetch(urlVerifyUserSignature, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: data
+    })
+    const result = await response.json()   
+```
+Here, result should be 'correct'/'wrong'.
+
+
 ## Mint NFT
 
 The frontend should post data to http://127.0.0.1:1985/generateTaskFromFrontend with the following format
