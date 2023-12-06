@@ -5,6 +5,7 @@
 Before running the relay at the AI side, we need to install the SDW and run it as a service.
 ## Install stable diffussion webui
 1. Since there are some difference with respect to the platform, plz find the best way to install SDW https://github.com/AUTOMATIC1111/stable-diffusion-webui
+The python version I used is 3.10.6
 2. For now, we use the model darkSushiMixMix_225D , which can be download at https://civitai.com/models/24779/dark-sushi-mix-mix ,where the model should be put in the folder /models/Stable-diffusion (if using lora, so should be put in Lora folder)
 
 ## Run SDW as a service
@@ -17,9 +18,18 @@ bash webui.sh --nowebui --gradio-auth admin:admin123   (more args: https://githu
 Now, we can run the relay.
 ### Install
 ```
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+source ~/.bashrc
+
+nvm install node
+npm install -g typescript
+npm install --global yarn
+```
+
+```
 yarn install
 ```
-!!! The package 'stable-diffusion-sdk' has some issue, so we need to modify the its code in node_modules/stable-diffusion-sdk/dist/lib/StableDiffusionApi.js around line 460
+!!! The package 'stable-diffusion-sdk' has some issue, so we need to modify the its code in node_modules/stable-diffusion-api/dist/lib/StableDiffusionApi.js around line 460
 
 ```
 const modelNames = models.map((model) => model.name);
@@ -36,6 +46,7 @@ general.ts is the config file for network setting such as the port number and th
 
 sdw.ts is the config file for the SDW setting such as security token, model name, network parameters.
 
+You may need to update the ip address in the src/config/general.ts  for the ai part before you compile it
 
 ### Compile 
 ```
@@ -49,7 +60,7 @@ tsc
 ```
 node dist/index.js --relaySide ai
 ```
-### Run at the frontend side
+### Run at the frontend side   
 ```
 node dist/index.js --relaySide frontend
 ```
