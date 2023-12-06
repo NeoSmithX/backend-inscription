@@ -96,7 +96,7 @@ export const distributeTask = async () => {
     app.post('/fetchTask', async (req: any, res: { json: (arg0: string | Task[]) => void; }) => {
         const tasks = taskGlobal.filter((task: Task) => task.isCompleted == false)
         if (tasks.length == 0) {
-            console.log('there is no task in sql, so reply none')
+            // console.log('there is no task in sql, so reply none')
             res.json('none')
 
         } else {
