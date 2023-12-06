@@ -27,7 +27,7 @@ export const fetchTaskFromFrontEnd = async (sdwInstance: SdwInstance) => {
             });
            
             const data = await response.json()
-            console.log(data)
+            // console.log(data)
             if (data == 'none'){
                 console.log('no task')
                 await new Promise(r => setTimeout(r, 1000)) 
@@ -103,9 +103,9 @@ export const fetchTaskFromFrontEnd_v2 = async (sdwInstance: SdwInstance) => {
             });
            
             const data = await response.json()
-            console.log(data)
+            // console.log(data)
             if (data == 'none'){
-                console.log('no task')
+                // console.log('no task')
                 await new Promise(r => setTimeout(r, 1000)) 
                 continue
             }
@@ -116,7 +116,7 @@ export const fetchTaskFromFrontEnd_v2 = async (sdwInstance: SdwInstance) => {
                 // const imgPath = 'src/public/output/ai_side/'+taskID+'.png'
                 const imgPath = 'src/public/output/ai_side/'+'image'+'.png'  
                 const path = require('path')
-                console.log('imgPath: ',imgPath)
+                // console.log('imgPath: ',imgPath)
                 await sdwInstance.text2img(nftMintText2Img,promptAdd,imgPath)  //skip for test
                 await new Promise(r => setTimeout(r, 100))
                 // const formData = new FormData()

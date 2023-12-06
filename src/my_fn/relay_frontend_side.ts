@@ -80,7 +80,7 @@ export const fetchTaskFromSql = async () => {
             });
 
             pythonProcess.on('close', (code) => {
-                console.log(`Child process exited with code ${code}`);
+                // console.log(`Child process exited with code ${code}`);
             });
         } catch (e) {
             console.log(e)
@@ -95,7 +95,7 @@ export const distributeTask = async () => {
     app.post('/fetchTask', async (req: any, res: { json: (arg0: string | Task[]) => void; }) => {
         const tasks = taskGlobal.filter((task: Task) => task.isCompleted == false)
         if (tasks.length == 0) {
-            console.log('send no task')
+            console.log('there is no task in sql, so reply none')
             res.json('none')
 
         } else {
@@ -173,7 +173,7 @@ export const verifyUserSignature = async () => {
 
         if (userAddress && message && signature) {
             const signerAddress = await web3WithoutRpc.eth.accounts.recover(message, signature)
-            if (signerAddress.tolowercase() == userAddress.tolowercase()) {
+            if (signerAddress.toLowerCase() == userAddress.toLowerCase()) {
                 res.json('correct')
             } else {
                 res.json('wrong')
