@@ -28,7 +28,7 @@ export type Task = {
 }
 const taskGlobal: Task[] = []
 export const fetchTaskFromSql = async () => {
-
+    console.log('fetchTaskFromSql function is working')
     while (true) {
         try {
             const pythonProcess = spawn('python', ['DB_backend/5_fetchTask.py']);
@@ -85,13 +85,14 @@ export const fetchTaskFromSql = async () => {
         } catch (e) {
             console.log(e)
         }
-        console.log('current task is: ', taskGlobal)
+        // console.log('current task is: ', taskGlobal)
         await new Promise(r => setTimeout(r, 10000))
     }
 
 }
 
 export const distributeTask = async () => {
+    console.log('distributeTask function is working')
     app.post('/fetchTask', async (req: any, res: { json: (arg0: string | Task[]) => void; }) => {
         const tasks = taskGlobal.filter((task: Task) => task.isCompleted == false)
         if (tasks.length == 0) {
@@ -141,6 +142,7 @@ export const receiveImgFromAiSide = async () => {
     });
 }
 export const receiveImgFromAiSide_v2 = async () => {
+    console.log('receiveImgFromAiSide_v2 function is working')
     app.post('/uploadImg', (req: any, res: any) => {
         const { image, taskID } = req.body;
 
@@ -166,19 +168,28 @@ export const receiveImgFromAiSide_v2 = async () => {
 
 
 export const verifyUserSignature = async () => {
-    const Web3 = require('web3')
-    const web3WithoutRpc = new Web3()
+    const Web3 = require('web3') 
+    const web3WithoutRpc = new Web3() //new Web3.providers.WebsocketProvider('wss://wss.api.moonbeam.network')
+    console.log('verifyUserSignature function is working')
     app.post('/verifyUserSignature', async  (req: any, res: any) => {
-        const { userAddress, message, signature } = req.body;
+        console.log('receive task from frontend', req.body)
+        try{
+            const { userAddress, message, signature } = req.body;
 
-        if (userAddress && message && signature) {
-            const signerAddress = await web3WithoutRpc.eth.accounts.recover(message, signature)
-            if (signerAddress.toLowerCase() == userAddress.toLowerCase()) {
-                res.json('correct')
-            } else {
-                res.json('wrong')
+            if (userAddress && message && signature) {
+                const signerAddress = await web3WithoutRpc.eth.accounts.recover(message, signature)
+                if (signerAddress.toLowerCase() == userAddress.toLowerCase()) {
+                    res.json('correct')
+                } else {
+                    
+                    res.json('wrong')
+                }
             }
+        }catch(e){
+            console.log(e)
+            res.json('unknown')
         }
+        
 
 
     })
@@ -186,8 +197,7 @@ export const verifyUserSignature = async () => {
 }
 
 export const generateTaskFromFrontend = async () => {
-    const Web3 = require('web3')
-    const web3WithoutRpc = new Web3()
+    console.log('generateTaskFromFrontend function is working')
     app.post('/generateTaskFromFrontend', (req: any, res: any) => {
         const { userAddress, feature } = req.body;
 
