@@ -168,11 +168,11 @@ export const receiveImgFromAiSide_v2 = async () => {
 export const verifyUserSignature = async () => {
     const Web3 = require('web3')
     const web3WithoutRpc = new Web3()
-    app.post('/verifyUserSignature', (req: any, res: any) => {
+    app.post('/verifyUserSignature', async  (req: any, res: any) => {
         const { userAddress, message, signature } = req.body;
 
         if (userAddress && message && signature) {
-            const signerAddress = web3WithoutRpc.eth.accounts.recover(message, signature)
+            const signerAddress = await web3WithoutRpc.eth.accounts.recover(message, signature)
             if (signerAddress.tolowercase() == userAddress.tolowercase()) {
                 res.json('correct')
             } else {
