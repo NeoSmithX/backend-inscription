@@ -243,6 +243,9 @@ export const generateTaskFromFrontend = async () => {
                 res.json('error when running python script')
             }
             
+        }else{
+            console.log(userAddress,feature)
+            res.json('task generation failed, please check the input format')
         }
         
         // "0xabcdef" "{\"feature1\":\"ff111\", \"feature2\":\"ff12323232\"}"
