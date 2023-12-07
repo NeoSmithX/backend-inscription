@@ -178,7 +178,8 @@ export const verifyUserSignature = async () => {
     // const { signatureVerify } = require('@polkadot/util-crypto')
     console.log('verifyUserSignature function is working')
     app.post('/verifyUserSignature', async  (req: any, res: any) => {
-        console.log('receive task from frontend', req.body)
+        console.log('receive verifyUserSignature from from '+req.ip)
+        console.log( req.body)
         try{
             const { userAddress, message, signature, accountType } = req.body;
 
@@ -187,9 +188,10 @@ export const verifyUserSignature = async () => {
                     case 'evm':{
                         const signerAddress = await web3WithoutRpc.eth.accounts.recover(message, signature)
                         if (signerAddress.toLowerCase() == userAddress.toLowerCase()) {
+                            console.log('signature is : ','correct')
                             res.json('correct')
                         } else {
-                            
+                            console.log('signature is : ','wrong')
                             res.json('wrong')
                         }
                         break
@@ -198,7 +200,7 @@ export const verifyUserSignature = async () => {
                         const messageU8a = stringToU8a(message)
                         // console.log('messageU8a',messageU8a)
                         const isValidSignature = signatureVerify(messageU8a, signature, userAddress).isValid
-                        // console.log('isValidSignature: ',isValidSignature)
+                        console.log('signature is : ',isValidSignature)
                         if (isValidSignature){
                             res.json('correct')
                         }else{
@@ -207,6 +209,7 @@ export const verifyUserSignature = async () => {
                         break
                     }
                     default:{
+                        console.log('unknown accountType')
                         res.json('unknown accountType')
                     }
                 }
@@ -227,11 +230,21 @@ export const verifyUserSignature = async () => {
 export const generateTaskFromFrontend = async () => {
     console.log('generateTaskFromFrontend function is working')
     app.post('/generateTaskFromFrontend', (req: any, res: any) => {
+        console.log('receive generateTaskFromFrontend from '+req.ip)
+        console.log( req.body)
         const { userAddress, feature } = req.body;
 
         if (userAddress && feature) {
-            spawn('python', ['DB_backend/2_create_task.py', userAddress, feature]);
+            try{
+                spawn('python', ['DB_backend/2_create_task.py', userAddress, feature])
+                res.json('the nft task has been added into SQL database, and the AI-imgae will be generated soon (absolute path will be added in the next test)')
+            }catch(e){
+                console.log(e)
+                res.json('error when running python script')
+            }
+            
         }
+        
         // "0xabcdef" "{\"feature1\":\"ff111\", \"feature2\":\"ff12323232\"}"
 
     })
