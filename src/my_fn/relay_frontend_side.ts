@@ -236,7 +236,8 @@ export const generateTaskFromFrontend = async () => {
 
         if (userAddress && feature) {
             try{
-                spawn('python', ['DB_backend/2_create_task.py', userAddress, feature])
+                spawn('python', ['DB_backend/2_create_task.py', userAddress, JSON.stringify(feature) ])
+                console.log('the nft task has been added into SQL database, and the AI-imgae will be generated soon (absolute path will be added in the next test')
                 res.json('the nft task has been added into SQL database, and the AI-imgae will be generated soon (absolute path will be added in the next test)')
             }catch(e){
                 console.log(e)
