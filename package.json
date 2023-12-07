@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "@polkadot/api": "^10.11.1",
+    "@polkadot/util": "^12.6.1",
     "body-parser": "^1.20.2",
     "commander": "^11.1.0",
     "cors": "^2.8.5",

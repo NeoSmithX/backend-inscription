@@ -170,28 +170,52 @@ export const receiveImgFromAiSide_v2 = async () => {
     });
 }
 
-
+import { stringToU8a, u8aToHex } from '@polkadot/util'
+import { signatureVerify } from '@polkadot/util-crypto';
 export const verifyUserSignature = async () => {
     const Web3 = require('web3') 
     const web3WithoutRpc = new Web3() //new Web3.providers.WebsocketProvider('wss://wss.api.moonbeam.network')
+    // const { signatureVerify } = require('@polkadot/util-crypto')
     console.log('verifyUserSignature function is working')
     app.post('/verifyUserSignature', async  (req: any, res: any) => {
         console.log('receive task from frontend', req.body)
         try{
-            const { userAddress, message, signature } = req.body;
+            const { userAddress, message, signature, accountType } = req.body;
 
-            if (userAddress && message && signature) {
-                const signerAddress = await web3WithoutRpc.eth.accounts.recover(message, signature)
-                if (signerAddress.toLowerCase() == userAddress.toLowerCase()) {
-                    res.json('correct')
-                } else {
-                    
-                    res.json('wrong')
+            if (userAddress && message && signature && accountType) {
+                switch (accountType) {
+                    case 'evm':{
+                        const signerAddress = await web3WithoutRpc.eth.accounts.recover(message, signature)
+                        if (signerAddress.toLowerCase() == userAddress.toLowerCase()) {
+                            res.json('correct')
+                        } else {
+                            
+                            res.json('wrong')
+                        }
+                        break
+                    }
+                    case 'substrate':{
+                        const messageU8a = stringToU8a(message)
+                        // console.log('messageU8a',messageU8a)
+                        const isValidSignature = signatureVerify(messageU8a, signature, userAddress).isValid
+                        // console.log('isValidSignature: ',isValidSignature)
+                        if (isValidSignature){
+                            res.json('correct')
+                        }else{
+                            res.json('wrong')
+                        }
+                        break
+                    }
+                    default:{
+                        res.json('unknown accountType')
+                    }
                 }
+
+                
             }
         }catch(e){
             console.log(e)
-            res.json('unknown')
+            res.json('unknown issue: some format error for the input')
         }
         
 
@@ -213,3 +237,7 @@ export const generateTaskFromFrontend = async () => {
     })
 
 }
+
+// curl -X POST -H "Content-Type: application/json" -d '{"accountType":"substrate","message":"i am testing", "signature":"0xb204163ca47ff05d2e8b1accb858acc10c06f6e694976cad2b5056221da67663eaaab8879b3d991cef3dab523fd7c5dc1071ad196d4351c2dab78d7f339b1b8f", "userAddress":"5Gv6J2jJSG7ZqrjKj22TsW2JgLqY5hL8oqDhBgRAcvmCxaKW"}' http://34.83.125.53:1985/verifyUserSignature
+
+// curl -X POST -H "Content-Type: application/json" -d '{"accountType":"substrate","message":"aiweb3", "signature":"0xb2808f1a866ed5d4a80886af874d8f1de0efd4cfa6e74e6affe7e36e08cc1b107e5de13606b537cfae9c8e8f09458560db9e754a807780dec2328d4dc5f66b81", "userAddress":"5Gazt49AnPMPRNt4U2mdJydoi9EKxZNFvJ85U7v1PyJzPmY4"}' http://127.0.0.1:1985/verifyUserSignature
