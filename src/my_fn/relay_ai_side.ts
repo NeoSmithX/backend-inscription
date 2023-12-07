@@ -10,9 +10,10 @@ import { Task } from "./relay_frontend_side";
 // const { buildSchema } = require('graphql');
 const express = require('express');
 const app = express();
-const cors = require('cors');
+
 app.use(express.json());
 // Enable CORS for all routes
+const cors = require('cors');
 app.use(cors());
 
 

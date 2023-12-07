@@ -14,6 +14,10 @@ const app = express();
 // app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }))
+// Enable CORS for all routes
+const cors = require('cors');
+app.use(cors());
+
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' }); // Images will be stored in 'uploads' folder
 const fs = require('fs');
