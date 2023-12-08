@@ -123,7 +123,7 @@ class DB_helper:
         return True 
     
     def searchETHAddress(self, ETHAddress):
-        ETHAddress = ETHAddress.lower() 
+        #ETHAddress = ETHAddress.lower() 
         try:
             mysqlC = 'SELECT * FROM userProfile where metamaskAddress =' +"\""  + str(ETHAddress) + "\";"
             #print(mysqlC)
@@ -132,13 +132,30 @@ class DB_helper:
             print("something is wrong searching the ETH address ")
             return None
         
+        #print(result)
         if len(result) < 1:
             return False 
         return result
     
+    def searchSUBAddress(self, SUBAddress):
+        #SUBAddress = SUBAddress.lower() 
+        try:
+            mysqlC = 'SELECT * FROM userProfile where substrateAddress =' +"\""  + str(SUBAddress) + "\";"
+            #print(mysqlC)
+            result = self.executeSQL(mysqlC)
+        except:
+            print("something is wrong searching the Substrate address ")
+            return None
+        #print(result)
+        if len(result) < 1:
+            return False 
+        return result
+
+
     def createuserProfile(self, ETHAddr, subAddr, twitterHandle, discordHandle, otherInfo):
-        ETHAddr = ETHAddr.lower()
-        subAddr = subAddr.lower()
+        #ETHAddr = ETHAddr.lower()
+        #subAddr = subAddr.lower()   
+        # as discussed with Neo, here we don't convert them into lowercase 
 
         try:
             mysqlC = 'INSERT INTO userProfile(metamaskAddress, substrateAddress, twitterHandle, discordHandle, otherInfo) VALUES (\"' + str(ETHAddr)  + "\", \"" + str(subAddr) + "\", \"" + str(twitterHandle) + "\", \"" + str(discordHandle) + "\", \"" + str(otherInfo)  + "\");"
@@ -147,7 +164,10 @@ class DB_helper:
         except:
             print("something is wrong adding the user profile ")
             return None 
-        return self.searchETHAddress(ETHAddr)   # return the searching result 
+        if ETHAddr!="null":
+            return self.searchETHAddress(ETHAddr)   # return the searching result 
+        else:
+            return self.searchSUBAddress(subAddr)   # return the searching result for sub address
     
     def claimNFTCodeDB(self, userID, nftcode):
         try:

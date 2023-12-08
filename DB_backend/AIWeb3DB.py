@@ -53,8 +53,18 @@ class AIWeb3:
         if result == None or result == False:
             return False 
         return result[0][0]
-    
-    def createProfile(self, ETHAddr, subAddr= "null", twitterHandle= "null", discordHandle= "null", otherInfo= "null"):
+
+    def subAddr2ID(self, SubAddress):
+        """
+        Search the SubAddress and return the ID for the address,
+        False will be returned if the address is not existing in the database 
+        """
+        result = self.db.searchSUBAddress(SubAddress)
+        if result == None or result == False:
+            return False 
+        return result[0][0]
+
+    def createProfile(self, ETHAddr="null", subAddr= "null", twitterHandle= "null", discordHandle= "null", otherInfo= "null"):
         """
         Create user profile and return the userID 
         ETH address is required for now, others can be options 
@@ -62,7 +72,12 @@ class AIWeb3:
         return -1 if anything is wrong
         return user ID if it is valid
         """
-        result = self.ETHAddr2ID(ETHAddr)
+        if ETHAddr == "null" and subAddr == "null":
+            return -1    # you must provide at least one address 
+        if ETHAddr != "null":
+            result = self.ETHAddr2ID(ETHAddr)
+        else:
+            result = self.subAddr2ID(subAddr)
         if result != False:
             return result    # the account had been created? 
         result = self.db.createuserProfile(ETHAddr, subAddr, twitterHandle, discordHandle, otherInfo)
