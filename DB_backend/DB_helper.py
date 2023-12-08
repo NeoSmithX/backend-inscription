@@ -279,6 +279,18 @@ class DB_helper:
             return False 
         return result[0][0]
 
+    def getIMGListfromUserID(self, userID):
+        try:
+            mysqlC = 'SELECT taskID,features,image_data from taskTable where userID =' +"\""  + str(userID) + "\" and imgStatus = 1;"
+            #print(mysqlC)
+            result = self.executeSQL(mysqlC)
+        except:
+            print("something is wrong searching the user id ")
+            return None  
+        if len(result)  < 1:
+            return False 
+        return result
+
 
 
 

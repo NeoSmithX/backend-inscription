@@ -46,3 +46,5 @@ python3 7_loadIMG.py "1" "./newIMG.jpeg"
 #8. Fetch all tasks
 python3 8_fetchTask.py
 
+#9. Get all images from the user. You need to make sure that you have submit tasks for this userAddress
+python3 9_fetchIMG.py '{"accountType":"substrate", "userAddress":"5xxxff12323232"}'

@@ -75,11 +75,11 @@ class AIWeb3:
         if ETHAddr == "null" and subAddr == "null":
             return -1    # you must provide at least one address 
         if ETHAddr != "null":
-            result = self.ETHAddr2ID(ETHAddr)
+            checkStatus = self.ETHAddr2ID(ETHAddr)
         else:
-            result = self.subAddr2ID(subAddr)
-        if result != False:
-            return result    # the account had been created? 
+            checkStatus = self.subAddr2ID(subAddr)
+        if checkStatus != False:
+            return checkStatus    # the account had been created? 
         result = self.db.createuserProfile(ETHAddr, subAddr, twitterHandle, discordHandle, otherInfo)
         if result == None or result == False:
             return -1
@@ -176,6 +176,15 @@ class AIWeb3:
             return False 
         #print("now check imggg")
         return self.db.getIMGfromTaskID(taskID)
+    
+    def getIMGListFromUserID(self, userID):
+        """
+        It will return all images for the user ID 
+        return false if it is not found
+        otherwise, will return a list of images
+        """
+        return self.db.getIMGListfromUserID(userID)
+
 
 
 
