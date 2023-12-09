@@ -6,11 +6,12 @@ import json
 
 aiweb3OBJ = AIWeb3()    # create the object
 
-
 if len(sys.argv) < 2:
-    print("We need one input, the json format string with accountType, userAddress, and it will print a list of all images for this user. For example:")
+    print("This will update user profile, we need one input, the json format string with accountType, userAddress, and optional:twitterHandle, discordHandle, otherInfo . For example:")
     print("python3 " + sys.argv[0] + " \'{\"accountType\":\"substrate\", \"userAddress\":\"5xxxff12323232\"}\'  ")
     print("python3 " + sys.argv[0] + " \'{\"accountType\":\"ethereum\", \"userAddress\":\"0xsdkjfjw\"}\'  ")
+    print("python3 " + sys.argv[0] + " \'{\"accountType\":\"substrate\", \"userAddress\":\"5xxxff124323232\", \"discordHandle\":\"cao\"}\'  ")
+    print("python3 " + sys.argv[0] + " \'{\"accountType\":\"substrate\", \"userAddress\":\"5xxxff1231233232\", \"signature\":\"xxxxxxxx\"}\'  ")
     sys.exit(0)
 
 jsonData = sys.argv[1]
@@ -49,53 +50,32 @@ if "signature" in loadedJsonData:
     else:
         otherInfo = otherInfo + "|" + loadedJsonData["signature"]
 
-
 userAddress = loadedJsonData["userAddress"]
 if loadedJsonData["accountType"] == "substrate":
     userID = aiweb3OBJ.subAddr2ID(userAddress)
     if userID == False:
         print("creating new profile for this address ... ")
-        userID = aiweb3OBJ.createProfile(subAddr = userAddress, twitterHandle = twitterHandle, discordHandle = discordHandle, otherInfo = otherInfo )
+        userID = aiweb3OBJ.createProfile(ETHAddr = userAddress, subAddr = userAddress, twitterHandle = twitterHandle, discordHandle = discordHandle, otherInfo = otherInfo )
         print("done, the user id is " + str(userID))
+    else:
+        userID = aiweb3OBJ.updateProfile(ETHAddr = userAddress, subAddr = userAddress, twitterHandle = twitterHandle, discordHandle = discordHandle, otherInfo = otherInfo )
+        print("done, profile updated")
+        #return True 
+
 elif loadedJsonData["accountType"] == "ethereum":
     userID = aiweb3OBJ.ETHAddr2ID(userAddress)
     if userID == False:
         print("creating new profile for this address ... ")
-        userID = aiweb3OBJ.createProfile(ETHAddr = userAddress, twitterHandle = twitterHandle, discordHandle = discordHandle, otherInfo = otherInfo)
+        userID = aiweb3OBJ.createProfile(ETHAddr = userAddress, subAddr = userAddress, twitterHandle = twitterHandle, discordHandle = discordHandle, otherInfo = otherInfo)
         print("done, the user id is " + str(userID))
-
-
-print("now getting the image from database")
-result = aiweb3OBJ.getIMGListFromUserID(userID)    # this will return all images from the same userID
-#print(result)
-# print(len(result))
-# for i in range(len(result)):
-#     print(result[i][0:2])
-# if result != None and result != False:
-#     outputIMGPath = "./newIMG.jpeg"
-#     with open(outputIMGPath, "wb") as file:
-#         file.write(result)
-if result == False or result == None or len(result) < 1:
-    print("No images found for the user")
+    else:
+        userID = aiweb3OBJ.updateProfile(ETHAddr = userAddress, subAddr = userAddress, twitterHandle = twitterHandle, discordHandle = discordHandle, otherInfo = otherInfo )
+        print("done, user profile updated")
+        #return True 
+else:
+    print("the wallet type is wrong, we only accept substrate and ethereum address for now, need to change the database if you want to support more")
     sys.exit(0)
 
-current_dir = os.path.dirname(os.path.abspath(__file__))
-print("Directory of the current file:", current_dir)
-IMGDIR = current_dir + "/IMG"
-try:
-    os.system("mkdir " + IMGDIR)
-except:
-    print("The image folder had been created already")
 
-# now store the images, the naming is : userID_taskID.jpeg  
-resultLIST = []
-for i in range(len(result)):
-    mytaskID = result[i][0]
-    imgDATA = result[i][2]
-    outputIMGPath = IMGDIR + "/" + str(userID) + "_" + str(mytaskID) + ".jpg"
-    with open(outputIMGPath, "wb") as file:
-        file.write(imgDATA)
-    resultLIST.append(outputIMGPath)
 
-print("Done, please check:")
-print("result:" + str(resultLIST))
+

@@ -67,7 +67,7 @@ class AIWeb3:
     def createProfile(self, ETHAddr="null", subAddr= "null", twitterHandle= "null", discordHandle= "null", otherInfo= "null"):
         """
         Create user profile and return the userID 
-        ETH address is required for now, others can be options 
+        ETH address or substrate address is required for now, others can be options 
 
         return -1 if anything is wrong
         return user ID if it is valid
@@ -87,6 +87,23 @@ class AIWeb3:
             return -1 
         return result[0][0]   # this is the user ID
 
+    def updateProfile(self, ETHAddr="null", subAddr= "null", twitterHandle= "null", discordHandle= "null", otherInfo= "null"):
+        """
+        Update user profile and return the userID 
+        ETH address or substrate address is required for now, others can be options 
+
+        return -1 if anything is wrong
+        return user ID if it is valid
+        """
+        if ETHAddr == "null" and subAddr == "null":
+            return -1    # you must provide at least one address 
+        print("now update the profile " + str(twitterHandle))
+        result = self.db.updateuserProfile(ETHAddr, subAddr, twitterHandle, discordHandle, otherInfo)
+        if result == None or result == False:
+            return -1
+        if len(result) <1 :
+            return -1 
+        return result[0][0]   # this is the user ID
 
     
     def claimNFTCode(self, userID, NFTCODE):

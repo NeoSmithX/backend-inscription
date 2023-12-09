@@ -7,5 +7,6 @@ aiweb3OBJ = AIWeb3()    # create the object
 
 print("now get all unfinished tasks ... ")
 result = aiweb3OBJ.checkTaskList()
-for each in result:
-    print(each)
+print("result:" + str(result))
+# for each in result:
+#     print(each)

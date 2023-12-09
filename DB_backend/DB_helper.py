@@ -168,7 +168,27 @@ class DB_helper:
             return self.searchETHAddress(ETHAddr)   # return the searching result 
         else:
             return self.searchSUBAddress(subAddr)   # return the searching result for sub address
-    
+
+    def updateuserProfile(self, ETHAddr, subAddr, twitterHandle, discordHandle, otherInfo):
+        #ETHAddr = ETHAddr.lower()
+        #subAddr = subAddr.lower()   
+        # as discussed with Neo, here we don't convert them into lowercase 
+
+        try:
+            if ETHAddr!="null":
+                mysqlC = "UPDATE userProfile SET substrateAddress = " + "\"" + str(subAddr) + "\"" + ",twitterHandle = \"" + str(twitterHandle) + "\", discordHandle=\"" + str(discordHandle) +"\", otherInfo=\"" + str(otherInfo) + "\" where metamaskAddress = \"" + str(ETHAddr) + "\";"
+            else:
+                mysqlC = "UPDATE userProfile SET metamaskAddress = " + "\"" + str(ETHAddr) + "\"" + ",twitterHandle = \"" + str(twitterHandle) + "\", discordHandle=\"" + str(discordHandle) +"\", otherInfo=\"" + str(otherInfo) + "\" where substrateAddress = \"" + str(subAddr) + "\";"
+            #print(mysqlC)
+            self.executeSQL(mysqlC)
+        except:
+            print("something is wrong adding the user profile ")
+            return None 
+        if ETHAddr!="null":
+            return self.searchETHAddress(ETHAddr)   # return the searching result 
+        else:
+            return self.searchSUBAddress(subAddr)   # return the searching result for sub address
+
     def claimNFTCodeDB(self, userID, nftcode):
         try:
             mysqlC = 'SELECT * FROM userProfile where id =' +"\""  + str(userID) + "\";"
