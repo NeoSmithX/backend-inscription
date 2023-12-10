@@ -109,9 +109,10 @@ Example code:
 ```
 Here, result should be 'correct'/'wrong'.
 
-❌ ## Mint NFT
-    only for test, not for production
-✅ ## Mint NFT with Code 
+## ❌ Mint NFT (only for test, not for production)
+    
+
+## ✅ Mint NFT with Code 
 
 The frontend should post data to http://127.0.0.1:1985/mintNFTwithCode with the following format
 
