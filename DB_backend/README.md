@@ -53,3 +53,7 @@ python3 8_fetchTask.py
 #10. Get all images from the user. You need to make sure that you have submit tasks for this userAddress
 python3 9_fetchIMG.py '{"accountType":"substrate", "userAddress":"5xxxff12323232"}'
 ### example return: result:{'0': '/Users/cao/CAO/github/relay_frontend_sdw/DB_backend/IMG/15_10.jpg', '1': '/Users/cao/CAO/github/relay_frontend_sdw/DB_backend/IMG/15_11.jpg', '2': '/Users/cao/CAO/github/relay_frontend_sdw/DB_backend/IMG/15_12.jpg'}
+
+
+#11. Json 格式输出, 需要一个参数，输出结果的路径，比如下面的命令会生成一个结果保存到jsonResult.json
+python3 8_fetchTask_JSON.py ./jsonResult.json
