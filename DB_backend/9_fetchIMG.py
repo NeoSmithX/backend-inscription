@@ -98,4 +98,11 @@ for i in range(len(result)):
     resultLIST.append(outputIMGPath)
 
 print("Done, please check:")
-print("result:" + str(resultLIST))
+
+count = 0
+finalResult = {}
+for each in resultLIST:
+    finalResult[str(count)] = each 
+    count+=1
+
+print("result:" +  str(finalResult))

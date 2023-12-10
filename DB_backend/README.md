@@ -48,8 +48,8 @@ python3 7_loadIMG.py "1" "./newIMG.jpeg"
 
 #9. Fetch all tasks
 python3 8_fetchTask.py
-### example return: result:[(2, 3, '{"feature1": "ff111", "feature2": "ff1232232123122"}'), (5, 4, '{"f1": "ffsdsd2", "f2": "ffs2222sdsdsdsdsdd"}'), (6, 4, '{"f1": "ffsdsd2", "f2": "ffs2222sdsdsdsdsdd"}'), (7, 3, '{"feature1": "ff111", "feature2": "ff12323232"}'), (9, 15, '{"feature1": "ff111", "feature2": "ff12323232"}')]
+### example return: result:result:{'0': {'taskID': 2, 'userID': 3, 'features': '{"feature1": "ff111", "feature2": "ff1232232123122"}'}, '1': {'taskID': 5, 'userID': 4, 'features': '{"f1": "ffsdsd2", "f2": "ffs2222sdsdsdsdsdd"}'}, '2': {'taskID': 6, 'userID': 4, 'features': '{"f1": "ffsdsd2", "f2": "ffs2222sdsdsdsdsdd"}'}, '3': {'taskID': 7, 'userID': 3, 'features': '{"feature1": "ff111", "feature2": "ff12323232"}'}, '4': {'taskID': 9, 'userID': 15, 'features': '{"feature1": "ff111", "feature2": "ff12323232"}'}}
 
 #10. Get all images from the user. You need to make sure that you have submit tasks for this userAddress
 python3 9_fetchIMG.py '{"accountType":"substrate", "userAddress":"5xxxff12323232"}'
-### example return: result:['/Users/cao/CAO/github/relay_frontend_sdw/DB_backend/IMG/15_10.jpg', '/Users/cao/CAO/github/relay_frontend_sdw/DB_backend/IMG/15_11.jpg', '/Users/cao/CAO/github/relay_frontend_sdw/DB_backend/IMG/15_12.jpg']
+### example return: result:{'0': '/Users/cao/CAO/github/relay_frontend_sdw/DB_backend/IMG/15_10.jpg', '1': '/Users/cao/CAO/github/relay_frontend_sdw/DB_backend/IMG/15_11.jpg', '2': '/Users/cao/CAO/github/relay_frontend_sdw/DB_backend/IMG/15_12.jpg'}
