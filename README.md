@@ -109,18 +109,46 @@ Example code:
 ```
 Here, result should be 'correct'/'wrong'.
 
+❌ ## Mint NFT
+    only for test, not for production
+✅ ## Mint NFT with Code 
 
-## Mint NFT
-
-The frontend should post data to http://127.0.0.1:1985/generateTaskFromFrontend with the following format
+The frontend should post data to http://127.0.0.1:1985/mintNFTwithCode with the following format
 
 ```
 {   
     "feature": "{\"feature1\":\"red hat\", \"feature2\":\"blue t-shirt\"}, ..."
-   
-    "userAddress": "0x..."  // user's metamask address
+    "userAddress": "0x..."  // user's metamask address,
+    "NFTCode": "ABCD" // the NFT code
+
 }
 ```
-Here, the feature indicates  the users' bais on their NFT. So, the front end may add a blank where the user can add this information.
+Here, the feature indicates  the users' bais on their NFT. The NFTCode is for verify if the User is eligible to mint the NFT. If not, u will get "The NFT code is not invalid". If yes, the NFT task will be created at the backend. After a while (should < 20 seconds), u can use /getUserAllImg to get all the IMG paths of the target user.
 
-What should the backend reply?? For now, after some commmunication between the VPS and the local machine (AI side), the IMG will be stored at the SQL database (frontend side). 
+## Fetch NFT paths
+Example code:
+```
+    const urlVerifyUserSignature = "http://127.0.0.1:1985/getUserAllImg" 
+    const data = JSON.stringify(
+        {
+            "accountType":"substrate",
+            "userAddress":"5xxxx"
+        }
+    )
+    const response = await fetch(urlVerifyUserSignature, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: data
+    })
+    const result = await response.json()   
+```
+The result should be a json object with the following format (absolute path):
+```
+{
+    "paths": [
+        "/Users/cao/CAO/github/relay_frontend_sdw/DB_backend/IMG/15_10.jpg",
+        "/Users/cao/CAO/github/relay_frontend_sdw/DB_backend/IMG/15_11.jpg",
+        "/Users/cao/CAO/github/relay_frontend_sdw/DB_backend/IMG/15_12.jpg"
+    ]
+}
+```
