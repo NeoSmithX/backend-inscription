@@ -1,5 +1,6 @@
 
-import StableDiffusionApi, { Txt2ImgOptions } from "stable-diffusion-api"
+import StableDiffusionApi from "../../my_modules/stable-diffusion-api/dist/index"
+import { Txt2ImgOptions } from "../../my_modules/stable-diffusion-api/dist/types"
 import { SdwConfig } from "../config/sdw"
 // import sdwConfig from '../config/sdw'
 

@@ -1,7 +1,7 @@
 // as the relay comminication between sdw and aiweb3-frontend
 
 import { spawn } from "child_process";
-
+import fs from 'fs'
 import { configRelay } from "../config/general";
 // const { graphqlHTTP } = require('express-graphql');
 // const { buildSchema } = require('graphql');
@@ -20,7 +20,7 @@ app.use(cors());
 
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' }); // Images will be stored in 'uploads' folder
-const fs = require('fs');
+// const fs = require('fs');
 const path = require('path');
 
 
@@ -31,108 +31,51 @@ export type Task = {
     isCompleted: boolean
 }
 const taskGlobal: Task[] = []
-export const fetchTaskFromSql = async () => {
+export const fetchTaskFromSql_v3 = async () => {
     console.log('fetchTaskFromSql function is working')
     while (true) {
         try {
-            const pythonProcess = spawn('python', ['DB_backend/8_fetchTask.py']);
-
-            pythonProcess.stdout.on('data', (data) => {
-                // console.log(`stdout: ${data}`)
-                const lines = data.toString().split('\n')
-                const tupleLineList = lines.filter((line: string | string[]) => line.includes('(') && line.includes(')'))
-                for (const tupleLine of tupleLineList) {
-                    // Remove the parentheses and split by comma
-                    const elements = tupleLine.slice(1, -1).split(',').map((el: string) => el.trim());
-
-                    // Extract the task ID
-                    const taskID = elements[0]
-                    // console.log('taskID:', taskID) //
-
-                    // Extract and parse the JSON string
-                    // Extract the JSON string
-                    const jsonMatch = tupleLine.match(/{.*}/);
-                    const jsonString = jsonMatch ? jsonMatch[0] : null;
-                    // Parse the JSON string
-                    const jsonObject = JSON.parse(jsonString);
-                    // console.log('JSON Object:', jsonObject);
-                    let featureInput = ''
-                    for (const [key, value] of Object.entries(jsonObject)) {
-                        // console.log(`${key}: ${value}`);
-                        featureInput = featureInput + value + ','
-                    }
-                    // console.log('featureInput:', featureInput)
-                    if (taskGlobal.filter((task: Task) => task.taskID == taskID).length == 0) {
-                        taskGlobal.push(
-                            {
-                                taskID: taskID,
-                                featureInput: featureInput,
-                                imgPath: 'DB_backend/public/data_from_relay/' + taskID + '.png',
-                                isCompleted: false
-                            }
-                        )
-                    }
-
+            const filePath = 'src/output/python/8_fetchTask_JSON.json'
+            spawn('python', ['DB_backend/8_fetchTask_JSON.py', filePath])
+            await new Promise(r => setTimeout(r, 100))
+            fs.readFile(filePath, 'utf8', (err, jsonString) => {
+                if (err) {
+                    console.error("Error reading file:", err)
+                    return;
                 }
+                try {
+                    const data = JSON.parse(jsonString)
+                    for (const key in data) {
+                        const value = data[key]
+                        const taskID = value.taskID
+                        const userID = value.userID
+                        const features = JSON.parse(value.features)
+                        let featureInput = ''
+                        for (const [key, value] of Object.entries(features)) {
+                            // console.log(`${key}: ${value}`);
+                            featureInput = featureInput + value + ','
+                        }
+                        // console.log('featureInput:', featureInput)
+                        if (taskGlobal.filter((task: Task) => task.taskID == taskID).length == 0) {
+                            taskGlobal.push(
+                                {
+                                    taskID: taskID,
+                                    featureInput: featureInput,
+                                    imgPath: 'DB_backend/public/data_from_relay/' + taskID + '.png',
+                                    isCompleted: false
+                                }
+                            )
+                            // console.log('imcompleted task:',taskGlobal)
+                        }
 
+                    }
 
-
+                    // console.log(data);
+                } catch (err) {
+                    console.error("Error parsing JSON:", err);
+                }
             });
 
-            pythonProcess.stderr.on('data', (data) => {
-                console.error(`stderr: ${data}`);
-            });
-
-            pythonProcess.on('close', (code) => {
-                // console.log(`Child process exited with code ${code}`);
-            });
-        } catch (e) {
-            console.log(e)
-        }
-        // console.log('current task is: ', taskGlobal)
-        await new Promise(r => setTimeout(r, 10000))
-    }
-
-}
-export const fetchTaskFromSql_v2 = async () => {
-    console.log('fetchTaskFromSql function is working')
-    while (true) {
-        try {
-            const pythonProcess = spawn('python', ['DB_backend/8_fetchTask.py']);
-
-            pythonProcess.stdout.on('data', (data) => {
-                // console.log(`stdout: ${data}`)
-                const lines = data.toString().split('\n')
-                const lineWithResult = lines.find((line: string | string[]) => line.includes('result:') ).slice(7)
-                // const resultsString = output.match(/\[(.*?)\]/)[1];
-                const results = lineWithResult.split('), (');
-                console.log('results:', results)
-                console.log('result length:', results.length)
-                results.forEach((result:any) => {
-                    const [id1, id2, jsonStr] = result.replace(/\(|\)/g, '').split(', ');
-                    console.log('ID1:', id1);
-                    console.log('ID2:', id2);
-                    console.log('JSON:', jsonStr);
-                    
-                    // You can now parse the JSON string and use these values as needed
-                    const jsonData = JSON.parse(jsonStr);
-                    console.log('Parsed JSON:', jsonData);
-                  });
-                
-
-              
-
-
-
-            });
-
-            pythonProcess.stderr.on('data', (data) => {
-                console.error(`stderr: ${data}`);
-            });
-
-            pythonProcess.on('close', (code) => {
-                // console.log(`Child process exited with code ${code}`);
-            });
         } catch (e) {
             console.log(e)
         }
@@ -158,39 +101,6 @@ export const distributeTask = async () => { // this is to distrubute task to the
 
 }
 
-// export const receiveImgFromAiSide = async () => {
-//     app.post('/uploadImg', upload.single('image'), (req: any, res: any) => {
-//         console.log('!!!!!', req)
-//         const taskID = req.body.taskID
-//         console.log('Received taskId :', taskID);
-
-//         console.log('Received file:', req.file);
-//         console.log('Received body:', req.body); // Assuming 'text' is the key for the string data
-
-//         res.status(200).json({ message: 'File and text received' });
-
-
-
-//         const task = taskGlobal.find((task: Task) => task.taskID == req.body.text);
-//         if (task) {
-//             const tempPath = req.file.path;
-//             const targetPath = path.join(__dirname, 'uploads', taskID);
-
-//             // Move and rename the file
-//             fs.rename(tempPath, targetPath, (err: any) => {
-//                 if (err) return res.status(500).json({ message: 'Error saving the file' });
-
-//                 res.status(200).json({ message: 'File uploaded successfully' });
-//             });
-//             const pythonProcess = spawn('python', ['DB_backend/3_submit_task.py', task.taskID, task.imgPath]);
-//             task.isCompleted = true;
-//         }
-
-//     })
-//     app.listen(configRelay.frontend.port, () => {
-//         console.log(`Server running on ` + configRelay.frontend.url + ':' + configRelay.frontend.port);
-//     });
-// }
 export const receiveImgFromAiSide_v2 = async () => {
     console.log('receiveImgFromAiSide_v2 function is working')
     app.post('/uploadImg', (req: any, res: any) => {
@@ -219,54 +129,54 @@ export const receiveImgFromAiSide_v2 = async () => {
 import { stringToU8a, u8aToHex } from '@polkadot/util'
 import { signatureVerify } from '@polkadot/util-crypto';
 export const verifyUserSignature = async () => {
-    const Web3 = require('web3') 
+    const Web3 = require('web3')
     const web3WithoutRpc = new Web3() //new Web3.providers.WebsocketProvider('wss://wss.api.moonbeam.network')
     // const { signatureVerify } = require('@polkadot/util-crypto')
     console.log('verifyUserSignature function is working')
-    app.post('/verifyUserSignature', async  (req: any, res: any) => {
-        console.log('receive verifyUserSignature from from '+req.ip)
-        console.log( req.body)
-        try{
+    app.post('/verifyUserSignature', async (req: any, res: any) => {
+        console.log('receive verifyUserSignature from from ' + req.ip)
+        console.log(req.body)
+        try {
             const { userAddress, message, signature, accountType } = req.body;
 
             if (userAddress && message && signature && accountType) {
                 switch (accountType) {
-                    case 'evm':{
+                    case 'evm': {
                         const signerAddress = await web3WithoutRpc.eth.accounts.recover(message, signature)
                         if (signerAddress.toLowerCase() == userAddress.toLowerCase()) {
-                            console.log('signature is : ','correct')
+                            console.log('signature is : ', 'correct')
                             res.json('correct')
                         } else {
-                            console.log('signature is : ','wrong')
+                            console.log('signature is : ', 'wrong')
                             res.json('wrong')
                         }
                         break
                     }
-                    case 'substrate':{
+                    case 'substrate': {
                         const messageU8a = stringToU8a(message)
                         // console.log('messageU8a',messageU8a)
                         const isValidSignature = signatureVerify(messageU8a, signature, userAddress).isValid
-                        console.log('signature is : ',isValidSignature)
-                        if (isValidSignature){
+                        console.log('signature is : ', isValidSignature)
+                        if (isValidSignature) {
                             res.json('correct')
-                        }else{
+                        } else {
                             res.json('wrong')
                         }
                         break
                     }
-                    default:{
+                    default: {
                         console.log('unknown accountType')
                         res.json('unknown accountType')
                     }
                 }
 
-                
+
             }
-        }catch(e){
+        } catch (e) {
             console.log(e)
             res.json('unknown issue: some format error for the input')
         }
-        
+
 
 
     })
@@ -276,26 +186,26 @@ export const verifyUserSignature = async () => {
 export const generateTaskFromFrontend = async () => {
     console.log('generateTaskFromFrontend function is working')
     app.post('/generateTaskFromFrontend', async (req: any, res: any) => {
-        console.log('receive generateTaskFromFrontend from '+req.ip)
-        console.log( req.body)
+        console.log('receive generateTaskFromFrontend from ' + req.ip)
+        console.log(req.body)
         const { userAddress, feature } = req.body;
 
         if (userAddress && feature) {
-            try{
-                spawn('python', ['DB_backend/5_create_task.py', userAddress, JSON.stringify(feature) ])
+            try {
+                spawn('python', ['DB_backend/5_create_task.py', userAddress, JSON.stringify(feature)])
                 console.log('the nft task has been added into SQL database, and the AI-imgae will be generated soon (absolute path will be added in the next test')
                 res.json('the nft task has been added into SQL database, and the AI-imgae will be generated soon (absolute path will be added in the next test)')
-            }catch(e){
+            } catch (e) {
                 console.log(e)
                 res.json('error when running python script')
             }
-            
-        }else{
-            console.log(userAddress,feature)
+
+        } else {
+            console.log(userAddress, feature)
             res.json('task generation failed, please check the input format')
         }
-        
-    
+
+
 
     })
 
@@ -305,96 +215,148 @@ export const generateTaskFromFrontend = async () => {
 export const createUserProfile = async () => {
     console.log('createUserProfile function is working')
     app.post('/createUserProfile', async (req: any, res: any) => {
-        console.log('receive createUserProfile from '+req.ip)
-        console.log( req.body)
+        console.log('receive createUserProfile from ' + req.ip)
+        console.log(req.body)
         const { accountType, userAddress } = req.body
 
         if (accountType && userAddress) {
-            const data = {...JSON.parse(req.body),NFTEligible:0}
-            try{
-                spawn('python', ['DB_backend/2_setup_users.py', JSON.stringify(data) ])
-        
+            const data = { ...JSON.parse(req.body), NFTEligible: 0 }
+            try {
+                spawn('python', ['DB_backend/2_setup_users.py', JSON.stringify(data)])
+
                 res.json('success for createUserProfile')
-            }catch(e){
+            } catch (e) {
                 console.log(e)
                 res.json('fail for createUserProfile')
             }
-            
-        }else{
-            console.log(accountType,userAddress)
+
+        } else {
+            console.log(accountType, userAddress)
             res.json('createUserProfile failed, please check the input format')
         }
-        
-    
+
+
 
     })
 
 }
-export const checkNFTCode = async () => {   // this will update user profile to NFTEligible ++
-    console.log('checkNFTCode function is working')
-    app.post('/checkNFTCode', async (req: any, res: any) => {
-        console.log('receive checkNFTCode from '+req.ip)
-        console.log( req.body)
-        const { accountType, userAddress, NFTCode } = req.body
 
-        if (accountType && userAddress && NFTCode) {
-            try{
-                const isNFTCodeValid = spawn('python', ['DB_backend/3_1_checkNFTcode.py', NFTCode ])
 
-                if (isNFTCodeValid){
-                  
-                    // spawn('python', ['DB_backend/2_setup_users.py', JSON.stringify(data) ])
-                    res.json('NFT code is valid and the user NFTEligible is updated')
-                }else{
-                    res.json('NFT code is invalid')
-                }
+export const mintNFTwithCode = async () => {
+    const functionName = 'mintNFTwithCode'
+    console.log(functionName + ' function is working')
+    app.post('/' + functionName, async (req: any, res: any) => {
+        console.log('receive' + functionName + ' from ' + req.ip)
+        console.log(req.body)
+        const { accountType, userAddress, NFTCode,feature } = req.body
 
-            }catch(e){
+        if (accountType && userAddress && NFTCode &&feature) {
+
+            try {
+               
+                const pythonProcess = spawn('python', ['DB_backend/3_1_checkNFTcode.py', NFTCode])
+                pythonProcess.stdout.on('data', (data) => {
+                    // console.log(`stdout: ${data}`)
+                    
+                    if (data.toString().includes('The NFT code is not claimed yet')){
+                        const featureJson = JSON.stringify(
+                            {
+                                "feature1":feature
+                            }
+                        )
+                        const pythonProcess2 = spawn('python', ['DB_backend/5_create_task.py', JSON.stringify({"accountType":accountType,"userAddress":userAddress}), featureJson])
+                        pythonProcess2.stdout.on('data', (data2) => {
+                            console.log(`5_create_task.py stdout: ${data2}`)
+                            
+                        })
+                        //'{"accountType":"substrate","userAddress":"5xxx"}' '{"feature1":"ff111", "feature2":"ff12323232"}'  
+                        console.log('the nft task has been added into SQL database, and the AI-imgae will be generated soon (absolute path can be got by /getUserAllImg)')
+                        res.json('the nft task has been added into SQL database, and the AI-imgae will be generated soon (absolute path can be got by /getUserAllImg)')
+                    }else{
+                        res.json('The NFT code is not invalid')
+                        return
+                    }
+
+    
+    
+                });
+    
+                pythonProcess.stderr.on('data', (data) => {
+                    console.error(`stderr: ${data}`);
+                });
+    
+                pythonProcess.on('close', (code) => {
+                    // console.log(`Child process exited with code ${code}`);
+                });
+                // await new Promise(r => setTimeout(r, 100))
+               
+
+            } catch (e) {
                 console.log(e)
-                res.json('fail for checkNFTCode')
+                res.json('fail for ' + functionName)
             }
-       
-            
-            
-        }else{
-            console.log(accountType,userAddress)
-            res.json('createUserProfile failed, please check the input format')
+
+        } else {
+            console.log(accountType, userAddress)
+            res.json(functionName + ' failed, please check the input format')
         }
-        
-    
+
+
 
     })
 
 }
-
-
 
 export const getUserAllImg = async () => {
     const functionName = 'getUserAllImg'
-    console.log(functionName+' function is working')
-    app.post('/'+functionName, async (req: any, res: any) => {
-        console.log('receive' + functionName+' from '+req.ip)
-        console.log( req.body)
+    console.log(functionName + ' function is working')
+    app.post('/' + functionName, async (req: any, res: any) => {
+        console.log('receive' + functionName + ' from ' + req.ip)
+        console.log(req.body)
         const { accountType, userAddress } = req.body
 
         if (accountType && userAddress) {
-           
-            try{
-                const data = spawn('python', ['DB_backend/9_fetchIMG.py', req.body ])
-        
-                res.json(data)
-                
-            }catch(e){
+
+            try {
+               
+
+
+                const filePath = 'src/output/python/9_fetchIMG_JSON.json'
+                spawn('python', ['DB_backend/9_fetchIMG_JSON.py', JSON.stringify(req.body), filePath])
+                await new Promise(r => setTimeout(r, 100))
+                fs.readFile(filePath, 'utf8', (err, jsonString) => {
+                    if (err) {
+                        console.error("Error reading file:", err)
+                        res.json('not found the img')
+                        return;
+                    }
+                  
+                        const data = JSON.parse(jsonString)
+                        let imgPath = {
+                            paths: [] as string[] // Specify the type of 'paths' as an array of strings
+                        }
+                        for (const key in data) {
+                            if (data.hasOwnProperty(key)) {
+                                const value = (data as Record<string, any>)[key]
+                                imgPath.paths.push(value)
+                                
+                            }
+                        }
+                        res.json( JSON.stringify(imgPath) )
+                        return
+                }) 
+
+            } catch (e) {
                 console.log(e)
-                res.json('fail for '+functionName)
+                res.json('fail for ' + functionName)
             }
-            
-        }else{
-            console.log(accountType,userAddress)
-            res.json(functionName+ ' failed, please check the input format')
+
+        } else {
+            console.log(accountType, userAddress)
+            res.json(functionName + ' failed, please check the input format')
         }
-        
-    
+
+
 
     })
 
@@ -405,3 +367,6 @@ export const getUserAllImg = async () => {
 // curl -X POST -H "Content-Type: application/json" -d '{"accountType":"substrate","message":"aiweb3", "signature":"0xb2808f1a866ed5d4a80886af874d8f1de0efd4cfa6e74e6affe7e36e08cc1b107e5de13606b537cfae9c8e8f09458560db9e754a807780dec2328d4dc5f66b81", "userAddress":"5Gazt49AnPMPRNt4U2mdJydoi9EKxZNFvJ85U7v1PyJzPmY4"}' http://127.0.0.1:1985/verifyUserSignature
 // curl -X POST -H "Content-Type: application/json" -d '{"userAddress":"0x345fdA96178147bF5E8cdFbfBDF723d15f2973C3","feature":{"feature1":"red hair","feature2":"red hat"}}' http://127.0.0.1:1985/generateTaskFromFrontend
 
+// curl -X POST -H "Content-Type: application/json" -d '{"accountType":"substrate","userAddress":"56789"}' http://127.0.0.1:1985/getUserAllImg 
+// curl -X POST -H "Content-Type: application/json" -d '{"accountType":"substrate","userAddress":"56789", "NFTCode":"12345"}' http://127.0.0.1:1985/checkNFTCode 
+// curl -X POST -H "Content-Type: application/json" -d '{"accountType":"substrate","userAddress":"56789", "NFTCode":"abcd", "feature":"beautiful girl"}' http://127.0.0.1:1985/mintNFTwithCode 

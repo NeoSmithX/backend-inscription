@@ -2,8 +2,8 @@ import { program } from "commander"
 import { sdwConfig } from "../config/sdw"
 import { SdwInstance } from "../my_definition/class"
 
-import { distributeTask, fetchTaskFromSql, fetchTaskFromSql_v2, generateTaskFromFrontend, receiveImgFromAiSide_v2, verifyUserSignature } from "./relay_frontend_side"
-import { fetchTaskFromFrontEnd, fetchTaskFromFrontEnd_v2 } from "./relay_ai_side"
+import {  createUserProfile, distributeTask, fetchTaskFromSql_v3, generateTaskFromFrontend, getUserAllImg, mintNFTwithCode, receiveImgFromAiSide_v2, verifyUserSignature } from "./relay_frontend_side"
+import { fetchTaskFromFrontEnd_v2 } from "./relay_ai_side"
 
 
 program
@@ -21,11 +21,15 @@ export const run_relay = async () => {
         
     }else if (command_input.relaySide == 'frontend') {
 
-        fetchTaskFromSql_v2()  // get the task from sql
+        fetchTaskFromSql_v3()  // get the task from sql
         distributeTask()    // send task to the AI side
         receiveImgFromAiSide_v2() // receive the image from AI side
         verifyUserSignature()  // verify the user signature of a message
         generateTaskFromFrontend() // this is for the button minting NFT
+
+        getUserAllImg()
+        mintNFTwithCode()
+        createUserProfile()
    
     }else{
         console.log('please input --relaySide <string> wrong: ',command_input.relaySide)
@@ -33,4 +37,5 @@ export const run_relay = async () => {
     }
     console.log('starting as the relay at '+ command_input.relaySide + ' side')
 }
+
 

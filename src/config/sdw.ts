@@ -1,4 +1,4 @@
-import { StableDiffusionApiConfig, Txt2ImgOptions } from "stable-diffusion-api";
+import { StableDiffusionApiConfig, Txt2ImgOptions } from "../../my_modules/stable-diffusion-api/dist/types";
 
 export type SdwConfig ={
     sdwApi:StableDiffusionApiConfig,

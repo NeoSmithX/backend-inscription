@@ -29,16 +29,16 @@ npm install --global yarn
 ```
 yarn install
 ```
-!!! The package 'stable-diffusion-sdk' has some issue, so we need to modify the its code in node_modules/stable-diffusion-api/dist/lib/StableDiffusionApi.js around line 460
+❌ !!! The package 'stable-diffusion-sdk' has some issue, so we need to modify the its code in node_modules/stable-diffusion-api/dist/lib/StableDiffusionApi.js around line 460
 
 ```
-const modelNames = models.map((model) => model.name);
+❌const modelNames = models.map((model) => model.name);
 ```
 to 
 ```
-const modelNames = models.map((model) => model.model_name);
+❌const modelNames = models.map((model) => model.model_name);
 ```
-
+✅ For now, I have remove the package 'stable-diffusion-sdk' from package.json, and add an revised one in my_modules/stable-diffusion-sdk. So, u dont need to revise the sdk code!
 ### Add customer parameter into /config 
 aiweb3.ts is the config file for managing base prompts, i.e., the NFT style. 
 
