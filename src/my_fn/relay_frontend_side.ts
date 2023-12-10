@@ -94,7 +94,53 @@ export const fetchTaskFromSql = async () => {
     }
 
 }
+export const fetchTaskFromSql_v2 = async () => {
+    console.log('fetchTaskFromSql function is working')
+    while (true) {
+        try {
+            const pythonProcess = spawn('python', ['DB_backend/8_fetchTask.py']);
 
+            pythonProcess.stdout.on('data', (data) => {
+                // console.log(`stdout: ${data}`)
+                const lines = data.toString().split('\n')
+                const lineWithResult = lines.find((line: string | string[]) => line.includes('result:') ).slice(7)
+                // const resultsString = output.match(/\[(.*?)\]/)[1];
+                const results = lineWithResult.split('), (');
+                console.log('results:', results)
+                console.log('result length:', results.length)
+                results.forEach((result:any) => {
+                    const [id1, id2, jsonStr] = result.replace(/\(|\)/g, '').split(', ');
+                    console.log('ID1:', id1);
+                    console.log('ID2:', id2);
+                    console.log('JSON:', jsonStr);
+                    
+                    // You can now parse the JSON string and use these values as needed
+                    const jsonData = JSON.parse(jsonStr);
+                    console.log('Parsed JSON:', jsonData);
+                  });
+                
+
+              
+
+
+
+            });
+
+            pythonProcess.stderr.on('data', (data) => {
+                console.error(`stderr: ${data}`);
+            });
+
+            pythonProcess.on('close', (code) => {
+                // console.log(`Child process exited with code ${code}`);
+            });
+        } catch (e) {
+            console.log(e)
+        }
+        // console.log('current task is: ', taskGlobal)
+        await new Promise(r => setTimeout(r, 10000))
+    }
+
+}
 export const distributeTask = async () => { // this is to distrubute task to the stable-diffusion ai side
     console.log('distributeTask function is working')
     app.post('/fetchTask', async (req: any, res: { json: (arg0: string | Task[]) => void; }) => {

@@ -38,7 +38,7 @@ python3 3_2_claimNFTcode.py "ABCCCC" '{"accountType":"substrate", "userAddress":
 python3 3_3_update_users.py '{"accountType":"substrate", "userAddress":"5xxxff12323232"}'
 
 #6. Create a task. Need the ETH address and the json feature input
-python3 5_create_task.py "0xabcdef" '{"feature1":"ff111", "feature2":"ff12323232"}'  
+python3 5_create_task.py '{"accountType":"substrate","userAddress":"5xxx"}' '{"feature1":"ff111", "feature2":"ff12323232"}'  
 
 #7. Submit and update the task. Here we submit the image to the task ID 1 
 python3 6_submit_task.py "1" "./AIWEB3_logo.jpeg"

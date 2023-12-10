@@ -32,13 +32,13 @@ if loadedJsonData["accountType"] == "substrate":
     userID = aiweb3OBJ.subAddr2ID(userAddress)
     if userID == False:
         print("creating new profile for this address ... ")
-        userID = aiweb3OBJ.createProfile(subAddr = userAddress, twitterHandle = twitterHandle, discordHandle = discordHandle, otherInfo = otherInfo )
+        userID = aiweb3OBJ.createProfile(subAddr = userAddress)#, twitterHandle = twitterHandle, discordHandle = discordHandle, otherInfo = otherInfo )
         print("done, the user id is " + str(userID))
 elif loadedJsonData["accountType"] == "ethereum":
     userID = aiweb3OBJ.ETHAddr2ID(userAddress)
     if userID == False:
         print("creating new profile for this address ... ")
-        userID = aiweb3OBJ.createProfile(ETHAddr = userAddress, twitterHandle = twitterHandle, discordHandle = discordHandle, otherInfo = otherInfo)
+        userID = aiweb3OBJ.createProfile(ETHAddr = userAddress)#, twitterHandle = twitterHandle, discordHandle = discordHandle, otherInfo = otherInfo)
         print("done, the user id is " + str(userID))
 
 # now create the task
