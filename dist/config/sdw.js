@@ -1,4 +1,5 @@
 "use strict";
+// import { StableDiffusionApiConfig, Txt2ImgOptions } from "../../my_modules/stable-diffusion-api/dist/types";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sdwConfig = void 0;
 exports.sdwConfig = {
