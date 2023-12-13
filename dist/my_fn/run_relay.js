@@ -20,11 +20,12 @@ const run_relay = async () => {
         (0, relay_frontend_side_1.fetchTaskFromSql_v3)(); // get the task from sql
         (0, relay_frontend_side_1.distributeTask)(); // send task to the AI side
         (0, relay_frontend_side_1.receiveImgFromAiSide_v2)(); // receive the image from AI side
+        //// interact with the frontend
+        (0, relay_frontend_side_1.createUserProfile)();
         (0, relay_frontend_side_1.verifyUserSignature)(); // verify the user signature of a message
         // generateTaskFromFrontend() // this is for the button minting NFT
-        (0, relay_frontend_side_1.getUserAllImg)();
         (0, relay_frontend_side_1.mintNFTwithCode)();
-        (0, relay_frontend_side_1.createUserProfile)();
+        (0, relay_frontend_side_1.getUserAllImg)();
     }
     else {
         console.log('please input --relaySide <string> wrong: ', command_input.relaySide);

@@ -19,6 +19,7 @@ app.use(cors());
 
 
 export const fetchTaskFromFrontEnd_v2 = async (sdwInstance: SdwInstance) => {
+    console.log('fetchTaskFromFrontEnd_v2 is running')
     while (true){
         try{
             // get task
@@ -71,8 +72,9 @@ export const fetchTaskFromFrontEnd_v2 = async (sdwInstance: SdwInstance) => {
             
         }catch(e){
             console.log('fetchTaskFromRelay error: ',e)
+            await new Promise(r => setTimeout(r, 1000))
         }
-
+        console.log('get no task')
         await new Promise(r => setTimeout(r, 1000)) 
 
     }

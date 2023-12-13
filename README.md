@@ -12,8 +12,9 @@ The python version I used is 3.10.6
 ```
 conda activate xxx (this is the name of the conda environment)
 
-bash webui.sh --nowebui --gradio-auth admin:admin123   (more args: https://github.com/AUTOMATIC1111/stable-diffusion-webui/wiki/Command-Line-Arguments-and-Settings)
+bash webui.sh --nowebui --gradio-auth admin:admin123   
 ```
+(more args: https://github.com/AUTOMATIC1111/stable-diffusion-webui/wiki/Command-Line-Arguments-and-Settings)
 ## Run the relay (this project)
 Now, we can run the relay.
 ### Install

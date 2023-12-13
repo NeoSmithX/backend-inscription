@@ -1,7 +1,9 @@
 // import { Txt2ImgOptions } from "../../my_modules/stable-diffusion-api";
 // import { Txt2ImgOptions } from "../../my_modules/stable-diffusion-api/dist/types"
 
-import { Txt2ImgOptions } from "stable-diffusion-api";
+import { Txt2ImgOptions } from "../../my_modules/stable-diffusion-api/dist/types";
+
+
 
 export const nftMintText2Img:Txt2ImgOptions ={
     prompt:  " masterpiece, best quality, (colorful),(delicate eyes and face), volumatic light,ray tracing, (bust shot:2.0) ,extremely detailed CG unity 8k wallpaper,",

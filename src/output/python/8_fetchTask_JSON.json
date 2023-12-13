@@ -1,1 +1,7 @@
-{}
+{
+    "0": {
+        "taskID": 18,
+        "userID": 6,
+        "features": "{\"feature1\": \"red hat girl\"}"
+    }
+}
