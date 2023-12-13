@@ -25,7 +25,7 @@ export const run_relay = async () => {
         distributeTask()    // send task to the AI side
         receiveImgFromAiSide_v2() // receive the image from AI side
         verifyUserSignature()  // verify the user signature of a message
-        generateTaskFromFrontend() // this is for the button minting NFT
+        // generateTaskFromFrontend() // this is for the button minting NFT
 
         getUserAllImg()
         mintNFTwithCode()

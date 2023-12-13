@@ -361,6 +361,7 @@ export const getUserAllImg = async () => {
     })
 
 }
+// brew services stop mysql
 
 // curl -X POST -H "Content-Type: application/json" -d '{"accountType":"substrate","message":"i am testing", "signature":"0xb204163ca47ff05d2e8b1accb858acc10c06f6e694976cad2b5056221da67663eaaab8879b3d991cef3dab523fd7c5dc1071ad196d4351c2dab78d7f339b1b8f", "userAddress":"5Gv6J2jJSG7ZqrjKj22TsW2JgLqY5hL8oqDhBgRAcvmCxaKW"}' http://34.83.125.53:1985/verifyUserSignature
 
@@ -370,3 +371,7 @@ export const getUserAllImg = async () => {
 // curl -X POST -H "Content-Type: application/json" -d '{"accountType":"substrate","userAddress":"56789"}' http://127.0.0.1:1985/getUserAllImg 
 // curl -X POST -H "Content-Type: application/json" -d '{"accountType":"substrate","userAddress":"56789", "NFTCode":"12345"}' http://127.0.0.1:1985/checkNFTCode 
 // curl -X POST -H "Content-Type: application/json" -d '{"accountType":"substrate","userAddress":"56789", "NFTCode":"abcd", "feature":"beautiful girl"}' http://127.0.0.1:1985/mintNFTwithCode 
+
+
+// curl -X POST -H "Content-Type: application/json" -d '{"accountType":"substrate","userAddress":"56789", "NFTCode":"abcd", "feature":"beautiful girl"}' http://34.83.125.53:1985/mintNFTwithCode
+// curl -X POST -H "Content-Type: application/json" -d '{"accountType":"substrate","userAddress":"56789", "NFTCode":"abcd", "feature":"beautiful girl"}' http://34.83.125.53:1985/getUserAllImg 
