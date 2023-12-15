@@ -374,22 +374,29 @@ export const getUserAllImg = async () => {
                 const filePath = 'src/output/python/9_fetchIMG_JSON' + timestamp + '.json'
                 spawn('python', ['DB_backend/9_fetchIMG_JSON.py', JSON.stringify(req.body), filePath])
                 await new Promise(r => setTimeout(r, 500))
-                const jsonString = fs.readFileSync(filePath, 'utf8')
+                if (fs.existsSync(filePath)) {
+                    const jsonString = fs.readFileSync(filePath, 'utf8')
 
-                result.status = true
-                const data = JSON.parse(jsonString)
-                result.data = {
-                    paths: [] as string[] // Specify the type of 'paths' as an array of strings
-                }
-
-                for (const key in data) {
-                    if (data.hasOwnProperty(key)) {
-                        const value = (data as Record<string, any>)[key]
-                        result.data.paths.push(value)
-
+                    result.status = true
+                    const data = JSON.parse(jsonString)
+                    result.data = {
+                        paths: [] as string[] // Specify the type of 'paths' as an array of strings
                     }
+    
+                    for (const key in data) {
+                        if (data.hasOwnProperty(key)) {
+                            const value = (data as Record<string, any>)[key]
+                            result.data.paths.push(value)
+    
+                        }
+                    }
+                    res.json(result)
+                }else{
+                    console.log('not found the img')
+                    result.log = 'not found the img'
+                    res.json(result)
                 }
-                res.json(result)
+                
 
                 // if (fs.existsSync(filePath)) {
 
