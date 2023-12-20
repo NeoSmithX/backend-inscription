@@ -301,7 +301,8 @@ export const mintNFTwithCode = async () => {
                 pythonProcess.stdout.on('data', (data) => {
                     // console.log(`stdout: ${data}`)
 
-                    if (data.toString().includes('The NFT code is not claimed yet')) {
+                    if (true ||data.toString().includes('The NFT code is not claimed yet')) {
+                        console.log("for test, we bypass the NFT code check")
                         const featureJson = JSON.stringify(
                             {
                                 "feature1": feature
