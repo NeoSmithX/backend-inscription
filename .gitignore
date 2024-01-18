@@ -3,7 +3,7 @@ node_modules/
 
 # Ignore build artifacts
 build/
-#dist/
+dist/
 
 # Ignore log files
 *.log
