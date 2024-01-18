@@ -1,1 +1,0 @@
-{"version":3,"file":"aiweb3.js","sourceRoot":"","sources":["../../src/config/aiweb3.ts"],"names":[],"mappings":";AAAA,0EAA0E;AAC1E,oFAAoF;;;AAMvE,QAAA,eAAe,GAAiB;IACzC,MAAM,EAAG,0JAA0J;IAC/J,8IAA8I;IAElJ,eAAe,EAAG,wcAAwc;IAC1d,2BAA2B;IAC3B,SAAS,EAAE,EAAE;IACb,oBAAoB;IACpB,KAAK,EAAC,EAAE;IACR,YAAY,EAAE,iBAAiB;IAC/B,KAAK,EAAE,GAAG;IACV,MAAM,EAAE,GAAG;CACd,CAAA"}
