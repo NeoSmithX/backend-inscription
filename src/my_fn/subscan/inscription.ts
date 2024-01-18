@@ -1,9 +1,15 @@
 
 import {subscan_api_url} from '../../config/general'
 import {polkadot_key_format} from '../utils'
+import { program } from "commander"
+program
+    .option('--subscankey <string>', 'string')
+program.parse(process.argv)
+const command_input = program.opts()
+const subscankey = command_input.subscankey
 const myHeaders = new Headers();
 // myHeaders.append("User-Agent", "Apidog/1.0.0 (https://apidog.com)")
-myHeaders.append("x-api-key", "6b5fb7dff55040bda7aaba42af42111d")
+myHeaders.append("x-api-key", subscankey)
 myHeaders.append("Content-Type", "application/json")
 
 
