@@ -3,24 +3,13 @@
 
 # Query the winner in AMA Q&A
 
-The backend have multi main functions.
-1. create the winner list for AMA Q&A
-After the admin deploy the question with such format
+The backend have multi main functions. url should be the ip address of the backend server.
 
+1. create the winner list for AMA Q&A
+
+After the admin deploy the question, frontend needs to record question information into database via (call this backend) 
 ```
-    api.tx.system.remark(
-        JSON.stringify({
-            "p": "xxx", // this is to be determined, does not affect the query result
-            "op": "deployQuestion",
-            "space": "aiweb3-AMA",
-            "question_ID":"0"
-            "question": "Who is the most popular Chinese community in polkadot ecosystem",
-        })
-    )
-```
-U need to record question information into database via (call this backend) 
-```
-    const url = "http://localhost:1986/create_quest_in_database" 
+    const url = "http://url:1986/create_quest_in_database" 
     const data = JSON.stringify({
         "network":network,
         "space":space,
@@ -33,9 +22,10 @@ U need to record question information into database via (call this backend)
 
 
 2. Fetch quest information via database.
-U need to record question information into database via (call this backend) 
+
+Frontend can fetch question information from database via (call this backend) 
 ```
-    const url = "http://localhost:1986/read_quest_information_from_database" 
+    const url = "http://url:1986/read_quest_information_from_database" 
     const data = JSON.stringify({
         "network":network,
         "space":space,
@@ -43,14 +33,14 @@ U need to record question information into database via (call this backend)
     })
     const response = await fetch(url, data)
 ```
-Here, response including all the information of the question, including the deploy_hash, question, winner_num, winner_list, etc. Winner list exists only after the admin call the next function.
+Here, response including all the information of the specifical question, including the deploy_hash, question, winner_num, winner_list, etc. Winner list exists only after the admin call the function (/create_quest_winner).
 
 
 3. Create the winner.
 
-U need to create the quest winner (maybe by clicking a button, triggering this call)
+Frontend can create the quest winner (maybe click a button to trigger this call)
 ```
-    const url = "http://localhost:1986/create_quest_winner" 
+    const url = "http://url:1986/create_quest_winner" 
     const data = JSON.stringify({
         "network":network,
         "space":space,
@@ -60,7 +50,6 @@ U need to create the quest winner (maybe by clicking a button, triggering this c
     })
     const response = await fetch(url, data)
 ```
-
 
 Here, the result of winner list will be as such format
 ```
@@ -76,4 +65,4 @@ Here, the result of winner list will be as such format
         }
     }
 ```
-After this, u can fetch the winner list again by calling the function in 2.
+In addition, frontedn can fetch the winner list again by calling the function (/read_quest_information_from_database) at anytime.
