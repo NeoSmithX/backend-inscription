@@ -2,6 +2,9 @@
  This the backend for inscription real-application project in any substrate network. (For now, supporting astart/polkadot/...)
 
 # Query the winner in AMA Q&A
+
+The backend have multi main functions.
+1. create the winner list for AMA Q&A
 After the admin deploy the question with such format
 
 ```
@@ -15,35 +18,50 @@ After the admin deploy the question with such format
         })
     )
 ```
-Here, u should record the tx hash, i.e., deploy-hash. Then, some user will join our party and mint answer with such format
+U need to record question information into database via (call this backend) 
 ```
-    api.tx.system.remark(
-        JSON.stringify({
-            "p": "xxx", // this is to be determined, does not affect the query result
-            "op": "mintAnswer",
-            "space": "aiweb3-AMA",
-            "question_ID":"0"
-            "answer": "Ur answer",
-        })
-    )
+    const url = "http://localhost:1986/create_quest_in_database" 
+    const data = JSON.stringify({
+        "network":network,
+        "space":space,
+        "question_ID":question_ID,
+        "question":question,
+        "deploy_hash":deploy_hash
+    })
+    const response = await fetch(url, data)
 ```
 
-The, the frontend (anyone can connect to this backend) can get the winner by
+
+2. Fetch quest information via database.
+U need to record question information into database via (call this backend) 
 ```
-    const urlVerifyUserSignature = "http://localhost:1986/query_quest_winner" 
+    const url = "http://localhost:1986/read_quest_information_from_database" 
     const data = JSON.stringify({
-        message: "0xaaaaa is signing in to Aiweb3 at timestamp [current_timestamp] with nonce [random_nonce]",
-        signature: "0x...",
-        userAddress: "0x..."
+        "network":network,
+        "space":space,
+        "question_ID":question_ID,
     })
-    const response = await fetch(urlVerifyUserSignature, {
-        "network":"astar",
-        "hash": deploy-hash, // should start with 0x
-        "correct_answer": "aiweb3 community", // just a example, plz replace it with the real correct answer
-        "winner_num":"2" // first winner_num users will be the winner 
-    })
-    const result = await response.json() 
+    const response = await fetch(url, data)
 ```
+Here, response including all the information of the question, including the deploy_hash, question, winner_num, winner_list, etc. Winner list exists only after the admin call the next function.
+
+
+3. Create the winner.
+
+U need to create the quest winner (maybe by clicking a button, triggering this call)
+```
+    const url = "http://localhost:1986/create_quest_winner" 
+    const data = JSON.stringify({
+        "network":network,
+        "space":space,
+        "question_ID":question_ID,
+        "correct_answer":correct_answer,
+        "winner_num":winner_num
+    })
+    const response = await fetch(url, data)
+```
+
+
 Here, the result of winner list will be as such format
 ```
     {
@@ -58,3 +76,4 @@ Here, the result of winner list will be as such format
         }
     }
 ```
+After this, u can fetch the winner list again by calling the function in 2.

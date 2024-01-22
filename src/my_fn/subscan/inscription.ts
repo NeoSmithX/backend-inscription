@@ -66,7 +66,7 @@ export const quest_winner = async (network: string, deploy_hash: string, correct
         result.status = true
         result.winner_list = winner_list
         const result_write = await sql_quest.write_quest(
-            [{
+            {
                 network: network,
                 space: space,
                 question_ID: question_ID,
@@ -75,7 +75,7 @@ export const quest_winner = async (network: string, deploy_hash: string, correct
                 correct_answer: correct_answer,
                 winner_num: winner_num,
                 winner_list: winner_list
-            }]
+            }
         )
         if (!result_write) {
             console.log('failed to write the winner list to database')

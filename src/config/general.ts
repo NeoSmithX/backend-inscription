@@ -20,5 +20,6 @@ export const database_config = {
     host: 'localhost',
     user: 'aiwbe3_test',
     password: '',
-    database: 'inscription_aiweb3'
+    database: 'inscription_aiweb3',
+    table: 'aiweb3_questions'
   }
