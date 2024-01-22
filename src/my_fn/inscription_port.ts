@@ -4,6 +4,7 @@ import { spawn } from "child_process";
 import fs from 'fs'
 import {network_config} from '../config/general'
 import * as subscan_inscription from './subscan/inscription'
+import * as sql_quest from './database/quest'
 const express = require('express');
 const bodyParser = require('body-parser')
 const app = express();
@@ -71,3 +72,35 @@ export const query_quest_winner = async () => {
   
 }
 // curl -X POST http://localhost:1986/query_quest_winner -H "Content-Type: application/json" -d '{"network":"astar","hash": "0xf040dbca95abd9fdc1062a7fc3c9c0212d31970ce01e5dbc343a25edd6da4266", "correct_answer": "hello world","winner_num":"2"}'
+export const record_after_deploy_question = async () => {
+    console.log('record_after_deploy_question function is working')
+    let resposne = JSON.parse(JSON.stringify(response_default))
+    app.post('/record_after_deploy_question', async (req: any, res: any) => {
+        const { network, space, question_ID, question, deploy_hash } = req.body;
+
+        if (network && space && question_ID && question && deploy_hash) {
+            const result_write = await sql_quest.write_quest(
+                [{
+                    network:network,
+                    space:space,
+                    question_ID:question_ID,
+                    question:question,
+                    deploy_hash:deploy_hash
+                }]
+            )
+            if (result_write){
+                resposne.status = true
+                resposne.log = 'succeed to write the question to database'
+            }
+            
+            
+           
+        }else{
+            resposne.log = 'network && space && question_ID && question && deploy_hash is required'
+        }
+
+        res.json(resposne)
+       
+
+    })
+}

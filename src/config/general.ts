@@ -1,3 +1,5 @@
+// import {mysql.ConnectionOptions} from 'mysql2/promise';
+
 type NetworkConfig = {
     url:string,
     port:number,
@@ -13,3 +15,10 @@ export const subscan_api_url ={
     'polkadot':'polkadot.api.subscan.io',
     'astar':'astar.api.subscan.io'
 }
+
+export const database_config = {
+    host: 'localhost',
+    user: 'AIWeb3USER',
+    password: '',
+    database: 'inscription_aiweb3'
+  }

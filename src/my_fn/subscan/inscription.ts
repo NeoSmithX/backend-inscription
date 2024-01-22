@@ -58,8 +58,8 @@ export const quest_winner = async (network:string,hash:string,correct_answer:str
         console.log('inscription.op',inscription.op)
         return result
     }
-    const {space,questionID} = inscription
-    const winner_list = await find_winner(api_url,space,questionID,correct_answer,winner_num,question_data_json.block_num)
+    const {space,question_ID} = inscription
+    const winner_list = await find_winner(api_url,space,question_ID,correct_answer,winner_num,question_data_json.block_num)
     if (winner_list.length == winner_num){
         result.status = true
         result.winner_list = winner_list
@@ -67,7 +67,7 @@ export const quest_winner = async (network:string,hash:string,correct_answer:str
     return result
 }
 
-const find_winner = async (api_url:string,space:string,questionID:string,correct_answer:string,winner_num:number,start_block:number)=>{
+const find_winner = async (api_url:string,space:string,question_ID:string,correct_answer:string,winner_num:number,start_block:number)=>{
     
     let winner_list: string[] = []
     for (let page = 0; ; page++) {
@@ -121,7 +121,7 @@ const find_winner = async (api_url:string,space:string,questionID:string,correct
                 if (!inscription){
                     continue
                 }
-                if (inscription.op == "mintAnswer" && inscription.space == space && inscription.questionID == questionID && inscription.answer == correct_answer){
+                if (inscription.op == "mintAnswer" && inscription.space == space && inscription.question_ID == question_ID && inscription.answer == correct_answer){
                     const winner_address = remark_record[i].account_display.address
                     const winner_address_substrate = polkadot_key_format(winner_address,'substrate') as string
                     if (!winner_list.includes(winner_address_substrate)){

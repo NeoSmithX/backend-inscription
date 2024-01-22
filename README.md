@@ -10,7 +10,7 @@ After the admin deploy the question with such format
             "p": "xxx", // this is to be determined, does not affect the query result
             "op": "deployQuestion",
             "space": "aiweb3-AMA",
-            "questionID":"0"
+            "question_ID":"0"
             "question": "Who is the most popular Chinese community in polkadot ecosystem",
         })
     )
@@ -22,7 +22,7 @@ Here, u should record the tx hash, i.e., deploy-hash. Then, some user will join 
             "p": "xxx", // this is to be determined, does not affect the query result
             "op": "mintAnswer",
             "space": "aiweb3-AMA",
-            "questionID":"0"
+            "question_ID":"0"
             "answer": "Ur answer",
         })
     )
