@@ -1,7 +1,52 @@
 # Backend for inscription project
  This the backend for inscription real-application project in any substrate network. (For now, supporting astart/polkadot/...)
 
-# Query the winner in AMA Q&A
+
+
+# How to run this backend
+
+## run database
+### install mysql
+
+```
+sudo apt-get update
+sudo apt-get install mysql-server
+sudo mysql_secure_installation
+sudo systemctl start mysql
+sudo systemctl enable mysql
+sudo systemctl status mysql
+```
+
+### init mysql
+```
+mysql -u root -p
+CREATE DATABASE inscription_aiweb3;
+CREATE USER 'aiwbe3_test'@'localhost' IDENTIFIED BY '';
+GRANT ALL PRIVILEGES ON inscription_aiweb3.* TO 'aiwbe3_test'@'localhost';
+FLUSH PRIVILEGES;
+USE inscription_aiweb3;
+CREATE TABLE aiweb3_questions (
+    network VARCHAR(255),
+    space VARCHAR(255),
+    question_ID INT,
+    question TEXT,
+    deploy_hash VARCHAR(255),
+    correct_answer TEXT,
+    winner_num INT,
+    winner_list TEXT,
+    PRIMARY KEY (network, space, question_ID)
+);
+```
+## run backend
+```
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+source ~/.bashrc
+nvm install node
+npm install -g typescript
+npm install --global yarn
+```
+
+# How frontend interacts with this backend (Kabugu see here 🎉)
 
 The backend have multi main functions. url should be the ip address of the backend server.
 

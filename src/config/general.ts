@@ -22,4 +22,5 @@ export const database_config = {
     password: '',
     database: 'inscription_aiweb3',
     table: 'aiweb3_questions'
-  }
+}
+

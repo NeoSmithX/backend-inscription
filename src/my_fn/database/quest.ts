@@ -36,12 +36,12 @@ export async function read_quest (network:string,space: string, question_ID: num
             winner_num:rows[0].winner_num,
             winner_list:JSON.parse(rows[0].winner_list)
         }
-        return rows
+        return result
     } else if (rows.length > 1){
 
     }
     else {
-        console.log('No result found for space:', space, 'and question ID:', question_ID);
+        console.log('No result found for space:', space, ', and question ID:', question_ID);
     }
   }
 
