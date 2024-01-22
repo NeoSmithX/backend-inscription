@@ -18,7 +18,7 @@ export const subscan_api_url ={
 
 export const database_config = {
     host: 'localhost',
-    user: 'AIWeb3USER',
+    user: 'aiwbe3_test',
     password: '',
     database: 'inscription_aiweb3'
   }

@@ -42,7 +42,7 @@ export const listen = async()=>{
 }
 
 
-export const query_quest_winner = async () => {
+export const create_quest_winner = async () => {
     console.log('query_quest_winner function is working')
     let resposne = JSON.parse(JSON.stringify(response_default))
     app.post('/query_quest_winner', async (req: any, res: any) => {
@@ -52,11 +52,12 @@ export const query_quest_winner = async () => {
             const result = await subscan_inscription.quest_winner(network, hash, correct_answer, winner_num)
             if (result.status){
                 resposne.status = true
-                resposne.log = 'succeed to find the winner'
+                resposne.log = 'succeed to find the winner, where the winner list has been written to the database. If u wanna fetch the winner list in future, plz use api /read_winner_list'
                 resposne.data = {
                     winner_list:result.winner_list
                 }
                 console.log('result.winner_list',result.winner_list)
+                
             }else{
                 resposne.log = 'failed to find the winner'
             }
@@ -71,6 +72,8 @@ export const query_quest_winner = async () => {
     })
   
 }
+
+
 // curl -X POST http://localhost:1986/query_quest_winner -H "Content-Type: application/json" -d '{"network":"astar","hash": "0xf040dbca95abd9fdc1062a7fc3c9c0212d31970ce01e5dbc343a25edd6da4266", "correct_answer": "hello world","winner_num":"2"}'
 export const record_after_deploy_question = async () => {
     console.log('record_after_deploy_question function is working')
@@ -91,6 +94,44 @@ export const record_after_deploy_question = async () => {
             if (result_write){
                 resposne.status = true
                 resposne.log = 'succeed to write the question to database'
+            }
+            
+            
+           
+        }else{
+            resposne.log = 'network && space && question_ID && question && deploy_hash is required'
+        }
+
+        res.json(resposne)
+       
+
+    })
+}
+
+export const read_winner_list = async () => {
+    console.log('read_winner_list function is working')
+    let resposne = JSON.parse(JSON.stringify(response_default))
+    app.post('/read_winner_list', async (req: any, res: any) => {
+        const { network, space, question_ID} = req.body;
+
+        if (network && space && question_ID ) {
+            const result_read = await sql_quest.read_quest(
+                
+                    network,
+                    space,
+                    question_ID
+               
+            
+            )
+            if (result_read){
+                resposne.status = true
+                resposne.log = 'succeed to read the winner list from database'
+                resposne.data = {
+                    winner_list:result_read.winner_list
+                }
+                
+            }else{
+                resposne.log = 'failed to read the winner list from database'
             }
             
             
