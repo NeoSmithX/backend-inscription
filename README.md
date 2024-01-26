@@ -62,7 +62,15 @@ After the admin deploy the question, frontend needs to record question informati
         "question":question,
         "deploy_hash":deploy_hash
     })
-    const response = await fetch(url, data)
+    const response = await fetch(
+        url, 
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: data
+        }
+    )
+    console.log(response.json())
 ```
 
 
@@ -76,7 +84,15 @@ Frontend can fetch question information from database via (call this backend)
         "space":space,
         "question_ID":question_ID,
     })
-    const response = await fetch(url, data)
+    const response = await fetch(
+        url, 
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: data
+        }
+    )
+    console.log(response.json())
 ```
 Here, response including all the information of the specifical question, including the deploy_hash, question, winner_num, winner_list, etc. Winner list exists only after the admin call the function (/create_quest_winner).
 
@@ -93,7 +109,15 @@ Frontend can create the quest winner (maybe click a button to trigger this call)
         "correct_answer":correct_answer,
         "winner_num":winner_num
     })
-    const response = await fetch(url, data)
+    const response = await fetch(
+        url, 
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: data
+        }
+    )
+    console.log(response.json())
 ```
 
 Here, the result of winner list will be as such format
