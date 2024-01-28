@@ -1,3 +1,4 @@
+require('dotenv').config();
 
 import run_back_end from "./my_fn/run_backend";
 

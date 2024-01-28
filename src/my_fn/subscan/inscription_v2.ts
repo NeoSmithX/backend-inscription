@@ -2,7 +2,9 @@
 import { subscan_api_url } from '../../config/general'
 import { polkadot_key_format } from '../utils'
 // import { program } from "commander"
-import * as sql_quest from '../database/quest'
+// import * as sql_quest from '../database/quest'
+import * as supabase from '../supabase/init'
+
 // program
 //     .option('--subscankey <string>', 'string')
 // program.parse(process.argv)
@@ -10,9 +12,10 @@ import * as sql_quest from '../database/quest'
 // const subscankey = command_input.subscankey
 const myHeaders = new Headers();
 // myHeaders.append("User-Agent", "Apidog/1.0.0 (https://apidog.com)")
-// myHeaders.append("x-api-key", subscankey)
-// myHeaders.append("Content-Type", "application/json")
-const subscankey = process.env.SUBSCAN_KEY
+const subscan_key = process.env.SUBSCAN_KEY
+myHeaders.append("x-api-key", subscan_key as string)
+myHeaders.append("Content-Type", "application/json")
+
 
 
 export const quest_winner = async (network: string, deploy_hash: string, correct_answer: string, winner_num: number) => {
@@ -65,22 +68,35 @@ export const quest_winner = async (network: string, deploy_hash: string, correct
     if (winner_list.length == winner_num) {
         result.status = true
         result.winner_list = winner_list
-        const result_write = await sql_quest.write_quest(
-            {
-                network: network,
-                space: space,
-                question_ID: question_ID,
-                question: question,
-                deploy_hash: deploy_hash,
-                correct_answer: correct_answer,
-                winner_num: winner_num,
-                winner_list: winner_list
-            }
-        )
-        if (!result_write) {
-            console.log('failed to write the winner list to database')
+        // const result_write = await supabase.update_data(
+        //     'aiweb3-party',
+        //     {
+        //         network: network,
+        //         space: space,
+        //         question_ID: question_ID,
+        //         question: question,
+        //         deploy_hash: deploy_hash,
+        //         correct_answer: correct_answer,
+        //         winner_num: winner_num,
+        //         winner_list: winner_list
+        //     }
+        // )
+        // const result_write = await sql_quest.write_quest(
+        //     {
+        //         network: network,
+        //         space: space,
+        //         question_ID: question_ID,
+        //         question: question,
+        //         deploy_hash: deploy_hash,
+        //         correct_answer: correct_answer,
+        //         winner_num: winner_num,
+        //         winner_list: winner_list
+        //     }
+        // )
+        // if (!result_write) {
+        //     console.log('failed to write the winner list to database')
         
-        }
+        // }
     }
     return result
 }
